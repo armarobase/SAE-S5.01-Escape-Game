@@ -41,8 +41,8 @@ _Couverture : game design, tests, documentation_
 
 **Bassirou Doucouré 305**
 
-_Spécialité : fullstack (frontend, backend, base de données)_
+_Spécialité : base de données et infrastructure réseau/sécurité modélisation et persistance de données (SAÉ développement d'application mobile : prise en charge complète de la base de données), masterisation de parc et diagnostic réseau (stage : DSI d'Est Ensemble : brassage, DHCP, fibre optique, méthode agile (vue en deuxiemme année, appliquée en conditions réelles lors de la SAE de refonte de site web pour une association)._
 
-_Prise en charge : IoT / capteurs / microcontrôleurs, sécurité, tests_
+_Prise en charge : backend et workflows métier dans le développement de téléservices sous Publik (plateforme de dévellopement), frontend: compétences développée au fil des différents projets, à plutot consolider en conception d'interface, IoT,capteurs et microcontrôleurs: à dévelloper car aucune expérience préalable._
 
-_Couverture : game design, documentation, méthode agile_
+_Couverture : documentation technique (audit ergonomie + SEO d'un site institutionnel, note de synthèse RGPD), conformité et anonymisation des données sensibles, game design et scénarisation (aucune expérience directe, mais des bases de logique de parcours via la conception de workflows) , tests (à consolider, pas de pratique formalisée jusqu'ici)._
