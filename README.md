@@ -32,11 +32,13 @@ _Couverture : tests, méthode agile, architecture_
 
 **Adam Mokadem 305**
 
-_Spécialité : base de données, architecture_
+_Spécialité : base de données et développement frontend — modélisation/persistance des données, interfaces web et UI/UX (stage : formulaire web connecté à Supabase/PostgreSQL + conception d’une maquette Android sur Figma, FootFactory).
 
-_Prise en charge : frontend_
+_Prise en charge : Game Design / scénarisation, backend/API et architecture, IoT / capteurs / microcontrôleurs — à apprendre.
 
-_Couverture : game design, tests, documentation_
+_Couverture : documentation, méthode agile, tests, gestion de projet et suivi de l’avancement.
+
+_Autres compétences de couverture : HTML/CSS/JS, SQL, API REST, responsive design, Figma.
 
 
 **Bassirou Doucouré 305**
