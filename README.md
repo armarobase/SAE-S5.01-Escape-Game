@@ -25,9 +25,13 @@ _Autres compétences de couverture : frontend HTML/CSS/JS, bases de données (no
   
 **Yassine Bakhtaoui 306**
 
-_Spécialité (prise en charge) : game design, base de données, frontend, backend_
+_Spécialité : Game Design, bases de données, développement frontend et backend — conception de parcours et d'interactions, structuration et exploitation des données, développement d'interfaces et logique applicative. Intérêt particulier pour les bases de données dans le cadre d'une orientation future vers la Data et l'Intelligence Artificielle._
 
-_Couverture : tests, méthode agile, architecture_
+_Prise en charge : Game Design / scénarisation — conception des énigmes, des mécaniques de jeu et de la progression du joueur dans l'escape game ; bases de données — modélisation et gestion des données liées aux joueurs, aux énigmes et à la progression ; frontend et backend — conception de l'interface et participation au développement de la logique applicative._
+
+_Couverture : tests, méthode agile et architecture — participation aux tests fonctionnels, au travail collaboratif et progressif du projet, ainsi qu'à la réflexion sur la séparation entre interface, logique métier et gestion des données._
+
+_Autres compétences de couverture : HTML/CSS/JavaScript, Java, SQL, conception UX/UI, responsive design, Figma._
 
 
 **Adam Mokadem 305**
