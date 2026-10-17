@@ -1,0 +1,16 @@
+# Dépendances
+node_modules/
+
+# Secrets (ne jamais committer les vraies valeurs)
+.env
+mosquitto/config/passwd
+iot/**/secrets.h
+
+# Builds et logs
+dist/
+build/
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
