@@ -3,8 +3,6 @@
 Projet : Data-Monstre (SAÉ S5.01)
 Rôles : base de données, architecture, game design, backend, IoT
 
----
-
 ## Semaine du 12/10/2026 au 18/10/2026
 
 ### Réalisé cette semaine
@@ -35,5 +33,3 @@ Rôles : base de données, architecture, game design, backend, IoT
 
 ### Temps passé
 - 5h
-
----
