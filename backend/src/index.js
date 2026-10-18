@@ -2,20 +2,42 @@
 const http = require('http');
 const express = require('express');
 const config = require('./config');
+const pool = require('./db/pool');
 const { connecterMqtt } = require('./mqtt/client');
+const { enregistrerMessage } = require('./mqtt/persistance');
 
 const app = express();
 app.use(express.json());
 
-// Route de test pour vérifier que le serveur tourne
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+// Route de test pour vérifier que le serveur tourne et que la base répond
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', db: 'ok' });
+  } catch (err) {
+    res.status(503).json({ status: 'erreur', db: 'indisponible' });
+  }
+});
+
+app.use('/api/sessions', require('./routes/sessions'));
+app.use('/api/scores', require('./routes/scores'));
+
+// Dernier filet : une erreur inattendue renvoie un 500 sans faire tomber le serveur
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') return res.status(400).json({ erreur: 'JSON invalide' });
+  console.error('[HTTP] Erreur :', err.message);
+  res.status(500).json({ erreur: 'Erreur interne' });
 });
 
 const server = http.createServer(app);
 
-connecterMqtt((topic, data) => {
+connecterMqtt(async (topic, data) => {
   console.log(`[MQTT] ${topic}`, data);
+  try {
+    await enregistrerMessage(topic, data);
+  } catch (err) {
+    console.error('[DB] Enregistrement du message impossible :', err.message);
+  }
   // TODO : transmettre le message à la machine à états de l'acte concerné (game/actes)
 });
 
