@@ -34,6 +34,6 @@ Rôles : base de données, architecture, game design, backend, IoT
 - Écrire des tests sur les routes et la persistance
 
 ### Temps passé
-- ...h
+- 5h
 
 ---
