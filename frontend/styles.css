@@ -1,0 +1,122 @@
+:root {
+  color-scheme: dark;
+  --fond: #0a0f0d;
+  --carte: #121a17;
+  --bord: #24332d;
+  --texte: #e6f1ec;
+  --discret: #8fa69b;
+  --calme: #34d399;
+  --tendue: #facc15;
+  --critique: #fb923c;
+  --alerte: #f87171;
+  --police: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police);
+  line-height: 1.5;
+}
+
+.page { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
+
+.entete {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem;
+}
+.entete h1 { margin: 0; font-family: var(--mono); font-size: 1.75rem; letter-spacing: .08em; text-transform: uppercase; }
+.entete h1 span { color: var(--calme); }
+.entete-etat { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+
+.connexion { margin: 0; padding: .25rem .75rem; border-radius: 999px; border: 1px solid var(--bord); font-size: .875rem; }
+.connexion[data-connexion='connecte'] { color: var(--calme); border-color: var(--calme); }
+.connexion[data-connexion='deconnecte'] { color: var(--alerte); border-color: var(--alerte); }
+
+.postes { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; font-size: .8125rem; }
+.postes li { padding: .125rem .625rem; border-radius: 6px; border: 1px solid var(--bord); color: var(--discret); }
+.postes li[data-statut='online'] { color: var(--calme); border-color: var(--calme); }
+.postes li[data-statut='offline'] { color: var(--alerte); border-color: var(--alerte); }
+
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 12px; padding: 1.25rem; }
+.carte h2 { margin: 0 0 .75rem; font-size: .8125rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--discret); }
+
+.jeu { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1.5rem; align-items: start; }
+.colonne { display: grid; gap: 1.5rem; }
+
+/* Jauge */
+.jauge { --couleur: var(--calme); }
+.jauge[data-niveau='tendue'] { --couleur: var(--tendue); }
+.jauge[data-niveau='critique'] { --couleur: var(--critique); }
+.jauge[data-niveau='alerte'] { --couleur: var(--alerte); }
+.jauge-valeur { margin: 0; font-family: var(--mono); font-size: clamp(4rem, 9vw, 8rem); font-weight: 700; line-height: 1; color: var(--couleur); }
+.jauge-unite { font-size: .4em; }
+.jauge-barre { position: relative; height: 2rem; margin-top: 1rem; border-radius: 8px; background: #0b110f; border: 1px solid var(--bord); overflow: hidden; }
+.jauge-remplissage { height: 100%; background: var(--couleur); transition: width .6s ease, background-color .6s ease; }
+.jauge-palier { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--fond); }
+.jauge-niveau { margin: .75rem 0 0; font-weight: 600; color: var(--couleur); }
+.jauge[data-niveau='alerte'] .jauge-valeur { animation: pulsation 1s ease-in-out infinite; }
+
+.chrono-valeur { margin: 0; font-family: var(--mono); font-size: 3rem; font-weight: 700; }
+.chrono[data-urgent='true'] .chrono-valeur { color: var(--alerte); }
+
+/* Progression */
+.actes { margin: 0; padding: 0; list-style: none; display: grid; gap: .75rem; }
+.acte { padding: .75rem 1rem; border-radius: 8px; border: 1px solid var(--bord); color: var(--discret); }
+.acte[data-etat='active'] { border-color: var(--calme); color: var(--texte); }
+.acte[data-etat='resolue'] { color: var(--calme); }
+.acte-titre { margin: 0; display: flex; justify-content: space-between; gap: 1rem; font-weight: 600; }
+.enigmes { margin: .5rem 0 0; padding-left: 1.25rem; font-size: .875rem; }
+.enigmes li[data-etat='resolue'] { color: var(--calme); }
+.enigmes li[data-etat='active'] { color: var(--texte); }
+.etiquette { font-size: .75rem; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: var(--discret); }
+.acte[data-etat='active'] > .acte-titre .etiquette, .acte[data-etat='resolue'] > .acte-titre .etiquette { color: inherit; }
+
+/* Documents */
+.document { margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: #0d1512; border: 1px solid var(--bord); border-left: 4px solid var(--discret); }
+.document[data-type='mail'] { border-left-color: #60a5fa; }
+.document[data-type='log'] { border-left-color: var(--calme); }
+.document[data-brouille='true'] { border-left-color: var(--alerte); }
+.document header { display: flex; align-items: baseline; gap: .75rem; }
+.document h3 { margin: 0; font-size: 1rem; }
+.document-de { margin: .5rem 0 0; font-size: .875rem; color: var(--discret); }
+.document pre { margin: .75rem 0 0; white-space: pre-wrap; font-family: var(--mono); font-size: .9375rem; }
+.document-alerte { margin: .75rem 0 0; font-size: .875rem; color: var(--alerte); }
+.vide { color: var(--discret); }
+
+/* Attente et fin */
+.attente { display: grid; gap: 1.5rem; max-width: 56rem; margin: 0 auto; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+button {
+  padding: .875rem 2rem; border: 0; border-radius: 8px; cursor: pointer;
+  background: var(--calme); color: #04130c; font: inherit; font-size: 1.125rem; font-weight: 700;
+}
+button:hover { filter: brightness(1.1); }
+button:focus-visible { outline: 3px solid var(--texte); outline-offset: 3px; }
+.erreur { margin: 0; color: var(--alerte); }
+
+.fin { margin-bottom: 1.5rem; text-align: center; border-color: var(--alerte); }
+.fin[data-victoire='true'] { border-color: var(--calme); }
+.fin h2 { font-size: 1.5rem; color: var(--alerte); letter-spacing: .04em; }
+.fin[data-victoire='true'] h2 { color: var(--calme); }
+.fin-score { font-family: var(--mono); font-size: 1.25rem; }
+
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); }
+th, td { padding: .5rem .75rem; text-align: left; border-bottom: 1px solid var(--bord); }
+th { font-size: .75rem; color: var(--discret); text-transform: uppercase; letter-spacing: .08em; }
+tr[data-courante='true'] td { color: var(--calme); font-weight: 700; }
+
+@keyframes pulsation { 50% { opacity: .55; } }
+
+@media (max-width: 900px) {
+  .jeu { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jauge-remplissage { transition: none; }
+  .jauge[data-niveau='alerte'] .jauge-valeur { animation: none; }
+}
