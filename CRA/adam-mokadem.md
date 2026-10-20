@@ -31,4 +31,4 @@ Rôles : frontend, base de données, architecture, tests, game design, documenta
 - Préparer la démonstration du MVP : une séquence complète traversant carte, MQTT, backend, base et écran
 
 ### Temps passé
-- [à compléter] h
+- 7h
