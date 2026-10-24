@@ -27,7 +27,9 @@ module.exports = {
   },
 
   acte1: {
-    // Nombre de boutons et de notifications (docs/mqtt.md section 9)
+    // Nombre de boutons et de notifications (docs/mqtt.md section 9).
+    // Doit rester identique aux boutons déclarés dans database/migrations/002_capteurs.sql :
+    // modifier les deux ensemble, sinon les valeurs du bouton en trop ne sont pas enregistrées en base.
     NB_BOUTONS: 3,
     // Identifiants des badges acceptés (celui du simulateur, en attendant les vrais badges)
     BADGES_AUTORISES: ['04A1B2C3'],
@@ -40,5 +42,12 @@ module.exports = {
     // Code de 4 chiffres pour 3 actes : par exemple "4" / "27" / "1".
     FRAGMENT: '4',
     ORDRE_FRAGMENT: 1,
+  },
+
+  acte3: {
+    // Nombre de ports du panneau de brassage (docs/mqtt.md section 9).
+    // Doit rester identique aux ports déclarés dans database/migrations/002_capteurs.sql :
+    // modifier les deux ensemble, sinon les valeurs du port en trop ne sont pas enregistrées en base.
+    NB_PORTS: 4,
   },
 };
