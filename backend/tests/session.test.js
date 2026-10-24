@@ -68,7 +68,20 @@ test('les effets de l\'acte sont transmis en précisant l\'acte', () => {
   assert.deepEqual(deType(effets, 'led'), [{ type: 'led', acte: 1, numero: 2, valeur: 'off' }]);
 });
 
-test('l\'Acte 1 résolu livre son fragment et la partie passe à l\'Acte 2', () => {
+// Change temporairement le dernier acte jouable le temps d'un test, puis remet la valeur d'origine
+function avecDernierActe(valeur, testFn) {
+  return () => {
+    const origine = config.DERNIER_ACTE;
+    config.DERNIER_ACTE = valeur;
+    try {
+      testFn();
+    } finally {
+      config.DERNIER_ACTE = origine;
+    }
+  };
+}
+
+test('l\'Acte 1 résolu livre son fragment et la partie passe à l\'Acte 2', avecDernierActe(4, () => {
   const { partie } = session.demarrerPartie();
   const effets = envoyer(partie, SCENARIO_ACTE1);
 
@@ -80,9 +93,9 @@ test('l\'Acte 1 résolu livre son fragment et la partie passe à l\'Acte 2', () 
   assert.equal(partie.fragments.length, 1);
   // 6 actions : badge, 3 coupures, écran, veille
   assert.equal(partie.jauge, DEPART - 6 * BAISSE_PAR_ACTION);
-});
+}));
 
-test('à l\'Acte 2 (pas encore implémenté), les messages sont ignorés et journalisés', () => {
+test('à l\'Acte 2 (pas encore implémenté), les messages sont ignorés et journalisés', avecDernierActe(4, () => {
   const { partie } = session.demarrerPartie();
   envoyer(partie, SCENARIO_ACTE1);
 
@@ -91,6 +104,33 @@ test('à l\'Acte 2 (pas encore implémenté), les messages sont ignorés et jour
 
   const ancienActe = session.traiterMessage(partie, 'datamonstre/acte1/bouton/1', 'appui');
   assert.deepEqual(ancienActe.map((e) => e.type), ['ignore']);
+}));
+
+test('avec DERNIER_ACTE = 1, le scénario de l\'Acte 1 donne la victoire', avecDernierActe(1, () => {
+  const { partie } = session.demarrerPartie();
+  const effets = envoyer(partie, SCENARIO_ACTE1);
+
+  assert.equal(partie.statut, 'victoire');
+  assert.equal(partie.acteCourant, 1);
+  // Le fragment est collecté avant la fin, puis la partie se termine
+  assert.deepEqual(effets.slice(-3).map((e) => e.type), ['fragment', 'fin', 'etat_jeu']);
+  assert.deepEqual(deType(effets, 'fin'), [{ type: 'fin', statut: 'victoire', raison: 'acte 1 résolu (dernier acte)' }]);
+  assert.deepEqual(deType(effets, 'etat_jeu'), [{ type: 'etat_jeu', statut: 'victoire', acte: 1 }]);
+}));
+
+test('après la victoire, le temps s\'arrête et les messages sont ignorés', avecDernierActe(1, () => {
+  const { partie } = session.demarrerPartie();
+  envoyer(partie, SCENARIO_ACTE1);
+  const tempsRestant = partie.tempsRestantS;
+
+  assert.deepEqual(session.tick(partie), []);
+  assert.equal(partie.tempsRestantS, tempsRestant);
+  const effets = session.traiterMessage(partie, 'datamonstre/acte1/bouton/1', 'appui');
+  assert.deepEqual(effets.map((e) => e.type), ['ignore']);
+}));
+
+test('la valeur par défaut est DERNIER_ACTE = 1 (jalon Prototype)', () => {
+  assert.equal(config.DERNIER_ACTE, 1);
 });
 
 test('un message d\'un acte qui n\'est pas en cours est ignoré', () => {

@@ -6,6 +6,10 @@ module.exports = {
   // cette valeur doit être passée explicitement à la création de la session.
   DUREE_PARTIE_S: 40 * 60,
 
+  // Dernier acte jouable : sa résolution donne la victoire.
+  // 1 pour le jalon Prototype (seul l'Acte 1 existe) ; passera à 4 quand les autres actes existeront.
+  DERNIER_ACTE: 1,
+
   jauge: {
     MIN: 0,
     MAX: 100, // la base impose une jauge entre 0 et 100
