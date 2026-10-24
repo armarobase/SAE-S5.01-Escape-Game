@@ -1,19 +1,17 @@
 // Logique de la jauge de "poids du monstre" (GDD §2.1, §2.3 et §4.1 Acte 4)
 // Fonctions pures : pas d'accès à la base ni au réseau, pour pouvoir les tester facilement.
-// Les valeurs ci-dessous sont provisoires, à valider avec l'équipe (game design).
+// Les valeurs (provisoires) sont réglées dans game/config.js.
+const config = require('./config');
 
-const JAUGE_MIN = 0;
-const JAUGE_MAX = 100;
-
-// Montée passive quand les joueurs restent inactifs (points par seconde)
-const MONTEE_INACTIVITE_PAR_S = 0.2;
-// Délai sans action avant que la jauge commence à monter
-const DELAI_INACTIVITE_S = 15;
-
-// Baisse de la jauge pour une action utile (points)
-const BAISSE_PAR_ACTION = 5;
-// Pénalité pour une erreur (mauvais code, mauvais câble...)
-const HAUSSE_PAR_ERREUR = 3;
+const {
+  MIN: JAUGE_MIN,
+  MAX: JAUGE_MAX,
+  DEPART: JAUGE_DEPART,
+  MONTEE_INACTIVITE_PAR_S,
+  DELAI_INACTIVITE_S,
+  BAISSE_PAR_ACTION,
+  HAUSSE_PAR_ERREUR,
+} = config.jauge;
 
 function borner(valeur) {
   return Math.max(JAUGE_MIN, Math.min(JAUGE_MAX, valeur));
@@ -23,6 +21,14 @@ function borner(valeur) {
 function appliquerInactivite(jauge, secondesSansAction) {
   const secondesPenalisees = Math.max(0, secondesSansAction - DELAI_INACTIVITE_S);
   return borner(jauge + secondesPenalisees * MONTEE_INACTIVITE_PAR_S);
+}
+
+// Jauge après une seconde de jeu, appelée chaque seconde par le timer de la session.
+// `secondesSansAction` : temps écoulé depuis la dernière action utile des joueurs.
+// La jauge ne monte qu'une fois le délai de grâce dépassé.
+function appliquerSeconde(jauge, secondesSansAction) {
+  if (secondesSansAction <= DELAI_INACTIVITE_S) return borner(jauge);
+  return borner(jauge + MONTEE_INACTIVITE_PAR_S);
 }
 
 // Jauge après une action qui coupe une source de surconsommation
@@ -55,8 +61,10 @@ function actesBrouilles(jauge) {
 module.exports = {
   JAUGE_MIN,
   JAUGE_MAX,
+  JAUGE_DEPART,
   borner,
   appliquerInactivite,
+  appliquerSeconde,
   appliquerAction,
   appliquerErreur,
   estPleine,

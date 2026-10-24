@@ -25,6 +25,23 @@ test("l'inactivité fait monter la jauge après le délai de grâce", () => {
   assert.equal(jauge.appliquerInactivite(40, 65), 50);
 });
 
+test('seconde par seconde : rien pendant le délai de grâce, puis montée', () => {
+  assert.equal(jauge.appliquerSeconde(40, 15), 40);
+  assert.equal(jauge.appliquerSeconde(40, 16), 40.2);
+  assert.equal(jauge.appliquerSeconde(100, 60), 100);
+});
+
+test('seconde par seconde, on retrouve le même résultat que appliquerInactivite', () => {
+  let valeur = 40;
+  for (let s = 1; s <= 65; s++) valeur = jauge.appliquerSeconde(valeur, s);
+  // Arrondi : additionner 0,2 cinquante fois donne 49,99999... en virgule flottante
+  assert.equal(Math.round(valeur * 100) / 100, jauge.appliquerInactivite(40, 65));
+});
+
+test('la jauge de départ est comprise entre le minimum et le maximum', () => {
+  assert.ok(jauge.JAUGE_DEPART >= jauge.JAUGE_MIN && jauge.JAUGE_DEPART < jauge.JAUGE_MAX);
+});
+
 test('la jauge pleine déclenche la défaite', () => {
   assert.equal(jauge.estPleine(99), false);
   assert.equal(jauge.estPleine(100), true);
