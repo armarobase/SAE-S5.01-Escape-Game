@@ -1,1 +1,10 @@
 * text=auto eol=lf
+
+# Fichiers binaires : Git ne doit jamais modifier leurs fins de ligne
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
