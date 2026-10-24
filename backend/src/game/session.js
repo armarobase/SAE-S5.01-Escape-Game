@@ -8,8 +8,8 @@ const jauge = require('./jauge');
 const acte1 = require('./actes/acte1');
 
 // Actes disponibles. Les actes 2 à 4 seront ajoutés ici quand ils existeront.
+// Le dernier acte jouable est réglé dans config.js (DERNIER_ACTE).
 const ACTES = { 1: acte1 };
-const DERNIER_ACTE = 4;
 
 // Effets renvoyés par la session :
 //   { type: 'etat_jeu', statut, acte }        statut ou acte courant modifié (topic datamonstre/jeu/etat)
@@ -123,9 +123,10 @@ function appliquerEffetsActe(partie, numero, effetsActe, effets) {
 }
 
 function passerActeSuivant(partie, effets) {
-  // Le dernier acte se termine quand le code final est saisi : c'est la victoire
-  if (partie.acteCourant === DERNIER_ACTE) {
-    terminer(partie, 'victoire', 'code final saisi', effets);
+  // La résolution du dernier acte jouable donne la victoire
+  // (à terme l'Acte 4 : code final saisi ; pour le Prototype, l'Acte 1)
+  if (partie.acteCourant >= config.DERNIER_ACTE) {
+    terminer(partie, 'victoire', `acte ${partie.acteCourant} résolu (dernier acte)`, effets);
     return;
   }
   entrerDansActe(partie, partie.acteCourant + 1, effets);

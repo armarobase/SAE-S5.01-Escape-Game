@@ -4,6 +4,8 @@ const sessions = require('../db/sessions');
 const fragments = require('../db/fragments');
 const evenements = require('../db/evenements');
 const scores = require('../db/scores');
+const moteur = require('../game/moteur');
+const configJeu = require('../game/config');
 
 const router = express.Router();
 
@@ -14,8 +16,11 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ erreur: 'dureeLimiteS doit être un entier positif (secondes)' });
   }
   try {
-    const session = await sessions.creerSession({ dureeLimiteS: duree });
+    // Durée passée explicitement : la base met 1800 s (30 min) par défaut, le GDD prévoit 40 min
+    const session = await sessions.creerSession({ dureeLimiteS: duree ?? configJeu.DUREE_PARTIE_S });
     await evenements.enregistrerEvenement({ sessionId: session.id, type: 'session_demarree' });
+    // Lance le déroulement de la partie (timer, jauge, Acte 1)
+    moteur.demarrer(session.id);
     res.status(201).json(session);
   } catch (err) {
     // Index unique : une seule partie en cours à la fois
@@ -73,6 +78,8 @@ router.post('/:id/terminer', async (req, res) => {
   }
   const terminee = await sessions.terminerSession(session.id, statut);
   if (!terminee) return res.status(409).json({ erreur: 'Cette partie est déjà terminée' });
+  // Partie terminée à la main : on arrête aussi son timer
+  if (moteur.idPartieEnCours() === session.id) moteur.arreter();
   await evenements.enregistrerEvenement({ sessionId: session.id, type: `session_${statut}` });
   const score = await scores.enregistrerScore(terminee);
   res.json({ session: terminee, score });
