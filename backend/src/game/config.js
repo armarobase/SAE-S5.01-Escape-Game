@@ -7,8 +7,9 @@ module.exports = {
   DUREE_PARTIE_S: 40 * 60,
 
   // Dernier acte jouable : sa résolution donne la victoire.
-  // 1 pour le jalon Prototype (seul l'Acte 1 existe) ; passera à 4 quand les autres actes existeront.
-  DERNIER_ACTE: 1,
+  // 2 pour le jalon Prototype (Acte 1 complet + une énigme d'un acte suivant) ; passera à 4
+  // quand les autres actes existeront.
+  DERNIER_ACTE: 2,
 
   jauge: {
     MIN: 0,
@@ -42,6 +43,18 @@ module.exports = {
     // Code de 4 chiffres pour 3 actes : par exemple "4" / "27" / "1".
     FRAGMENT: '4',
     ORDRE_FRAGMENT: 1,
+  },
+
+  acte2: {
+    // Durée d'absence continue devant l'écran avant de considérer la salle vide (docs/mqtt.md §3).
+    // Le PIR ne détecte que le mouvement : des joueurs immobiles peuvent passer pour absents.
+    // Trop court, l'énigme se résout sans que les joueurs aient compris ; trop long, elle
+    // frustre. À régler lors des essais en conditions réelles (risque PIR du GDD §6).
+    DELAI_ABSENCE_S: 10,
+    // Fragment du code final livré à la fin de l'acte, et sa place dans le code assemblé
+    // (voir acte1 : "4" / "27" / "1").
+    FRAGMENT: '27',
+    ORDRE_FRAGMENT: 2,
   },
 
   acte3: {

@@ -72,6 +72,14 @@ npm start
 
 Les messages envoyés par le simulateur doivent s'afficher dans le terminal du backend.
 
+Pour jouer l'Acte 2 (capteur de présence), démarrer une partie, laisser le scénario par défaut résoudre l'Acte 1, puis lancer :
+
+```
+npm start -- acte2
+```
+
+Le backend résout l'énigme quand la salle reste vide pendant `DELAI_ABSENCE_S` secondes (10 s, réglable dans `backend/src/game/config.js`) : le scénario se termine avant, la résolution apparaît ensuite dans le terminal du backend.
+
 ## Tout lancer avec Docker
 
 ```
