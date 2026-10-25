@@ -5,6 +5,7 @@ const config = require('../src/game/config');
 
 const BADGE = config.acte1.BADGES_AUTORISES[0];
 const { DEPART, BAISSE_PAR_ACTION, DELAI_INACTIVITE_S, MONTEE_INACTIVITE_PAR_S } = config.jauge;
+const { DELAI_ABSENCE_S } = config.acte2;
 
 const deType = (effets, type) => effets.filter((e) => e.type === type);
 
@@ -95,15 +96,77 @@ test('l\'Acte 1 résolu livre son fragment et la partie passe à l\'Acte 2', ave
   assert.equal(partie.jauge, DEPART - 6 * BAISSE_PAR_ACTION);
 }));
 
-test('à l\'Acte 2 (pas encore implémenté), les messages sont ignorés et journalisés', avecDernierActe(4, () => {
+test('à l\'Acte 2, la présence est traitée et les messages des autres actes sont ignorés', avecDernierActe(4, () => {
   const { partie } = session.demarrerPartie();
   envoyer(partie, SCENARIO_ACTE1);
 
-  const acte2 = session.traiterMessage(partie, 'datamonstre/acte2/presence', false);
-  assert.deepEqual(acte2.map((e) => e.type), ['ignore']);
+  assert.deepEqual(session.traiterMessage(partie, 'datamonstre/acte2/presence', true), []);
+  assert.equal(partie.etatActe.presence, true);
 
   const ancienActe = session.traiterMessage(partie, 'datamonstre/acte1/bouton/1', 'appui');
   assert.deepEqual(ancienActe.map((e) => e.type), ['ignore']);
+}));
+
+test('l\'Acte 2 démarre avec son énigme active', avecDernierActe(4, () => {
+  const { partie } = session.demarrerPartie();
+  const effets = envoyer(partie, SCENARIO_ACTE1);
+  assert.deepEqual(deType(effets, 'enigme').slice(-1), [
+    { type: 'enigme', acte: 2, code: 'acte2_autoplay', etat: 'active' },
+  ]);
+}));
+
+test('l\'Acte 2 se résout avec le temps : tick() fait avancer le délai d\'absence', avecDernierActe(4, () => {
+  const { partie } = session.demarrerPartie();
+  envoyer(partie, SCENARIO_ACTE1);
+  envoyer(partie, [['datamonstre/acte2/presence', true], ['datamonstre/acte2/presence', false]]);
+
+  let effets = [];
+  for (let s = 0; s < DELAI_ABSENCE_S - 1; s++) effets.push(...session.tick(partie));
+  assert.deepEqual(deType(effets, 'fragment'), []);
+
+  // La jauge est déjà à 0 après l'Acte 1 : on la remonte pour voir la baisse
+  partie.jauge = 50;
+  effets = session.tick(partie);
+  assert.deepEqual(deType(effets, 'fragment'), [
+    { type: 'fragment', acte: 2, valeur: config.acte2.FRAGMENT, ordre: config.acte2.ORDRE_FRAGMENT },
+  ]);
+  assert.deepEqual(deType(effets, 'enigme'), [
+    { type: 'enigme', acte: 2, code: 'acte2_autoplay', etat: 'resolue' },
+  ]);
+  assert.equal(partie.jauge, 50 - BAISSE_PAR_ACTION);
+  assert.deepEqual(deType(effets, 'jauge'), [{ type: 'jauge', valeur: 50 - BAISSE_PAR_ACTION, cause: 'action' }]);
+  assert.equal(partie.acteCourant, 3); // l'Acte 3 n'existe pas encore : ses messages seront ignorés
+  assert.equal(partie.fragments.length, 2);
+}));
+
+test('Prototype : Acte 1 puis Acte 2 résolus donnent la victoire', () => {
+  const { partie } = session.demarrerPartie();
+  envoyer(partie, SCENARIO_ACTE1);
+  assert.equal(partie.statut, 'en_cours');
+  assert.equal(partie.acteCourant, 2);
+
+  envoyer(partie, [['datamonstre/acte2/presence', true], ['datamonstre/acte2/presence', false]]);
+  const effets = [];
+  for (let s = 0; s < DELAI_ABSENCE_S; s++) effets.push(...session.tick(partie));
+
+  assert.equal(partie.statut, 'victoire');
+  assert.equal(partie.acteCourant, 2);
+  assert.deepEqual(partie.fragments.map((f) => f.acte), [1, 2]);
+  assert.deepEqual(deType(effets, 'fin'), [{ type: 'fin', statut: 'victoire', raison: 'acte 2 résolu (dernier acte)' }]);
+  assert.deepEqual(deType(effets, 'etat_jeu'), [{ type: 'etat_jeu', statut: 'victoire', acte: 2 }]);
+});
+
+test('la jauge pleine donne la défaite à l\'Acte 2, et l\'acte n\'avance plus', avecDernierActe(4, () => {
+  const { partie } = session.demarrerPartie();
+  envoyer(partie, SCENARIO_ACTE1);
+  envoyer(partie, [['datamonstre/acte2/presence', true], ['datamonstre/acte2/presence', false]]);
+  partie.jauge = 99.9;
+  partie.secondesSansAction = 1000;
+
+  const effets = session.tick(partie);
+  assert.equal(partie.statut, 'defaite');
+  assert.deepEqual(deType(effets, 'fin').map((e) => e.raison), ['jauge pleine']);
+  assert.equal(partie.etatActe.absenceS, 0);
 }));
 
 test('avec DERNIER_ACTE = 1, le scénario de l\'Acte 1 donne la victoire', avecDernierActe(1, () => {
@@ -129,8 +192,8 @@ test('après la victoire, le temps s\'arrête et les messages sont ignorés', av
   assert.deepEqual(effets.map((e) => e.type), ['ignore']);
 }));
 
-test('la valeur par défaut est DERNIER_ACTE = 1 (jalon Prototype)', () => {
-  assert.equal(config.DERNIER_ACTE, 1);
+test('la valeur par défaut est DERNIER_ACTE = 2 (jalon Prototype)', () => {
+  assert.equal(config.DERNIER_ACTE, 2);
 });
 
 test('un message d\'un acte qui n\'est pas en cours est ignoré', () => {
