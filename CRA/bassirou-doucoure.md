@@ -25,3 +25,15 @@ N'ayant pas encore le matériel en main, je n'ai pas pu tester le programme sur 
 **Objectifs pour la semaine prochaine**
 
 La semaine prochaine, je vais récupérer le matériel de l'Acte 1 et tester le programme sur la carte avec Mosquitto et le backend. Je vérifierai aussi le module RFID (fréquence des badges et tension) pour fixer avec l'équipe le format de l'identifiant, puis mettre à jour le contrat MQTT et le badge de test du simulateur. Je validerai en conditions réelles le seuil d'envoi du slider et du capteur de lumière, et je commencerai le programme de l'Acte 2 avec le capteur de présence PIR.
+
+---
+
+**Semaine du 19/10/2026 au 25/10/2026**
+
+Cette semaine, j'ai contrôlé la liste du matériel IoT à récupérer pour le projet, en vérifiant pour chaque pièce à quel acte elle servirait. Cela m'a permis de confirmer ce qui est indispensable à chacun des quatre actes, ce qui est optionnel et ce qui manque encore à l'inventaire.
+
+J'ai ensuite fixé un rendez-vous avec le professeur le vendredi 23 octobre à 11h pour récupérer le matériel.
+
+**Objectifs pour la semaine prochaine**
+
+À partir de la semaine prochaine, je m'occupe de tout ce qui concerne le branchement du matériel IoT et sa connexion avec le backend.
