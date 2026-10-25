@@ -33,3 +33,33 @@ Rôles : base de données, architecture, game design, backend, IoT
 
 ### Temps passé
 - 5h
+
+## Semaine du 19/10/2026 au 25/10/2026
+
+### Réalisé cette semaine
+- Acte 2 « La salle de visionnage » (énigme « Autoplay infini », capteur de présence PIR), `backend/src/game/actes/acte2.js` :
+  - l'énigme est résolue quand la salle reste vide pendant un délai réglable (10 s, `DELAI_ABSENCE_S` dans `game/config.js`), conformément au contrat MQTT qui place ce délai côté backend
+  - l'absence ne compte qu'après avoir détecté une présence, pour que l'énigme ne se résolve pas toute seule quand le capteur n'envoie rien
+  - un retour devant l'écran pendant le délai remet le décompte à zéro ; un message « absent » répété (QoS 1) ne le repousse pas
+  - l'acte livre son fragment du code final (`"27"`, deuxième position) et fait baisser la jauge
+- Intégration dans la session (`game/session.js`) : ajout d'un `tick()` facultatif par acte, appelé chaque seconde, pour les actes qui dépendent du temps ; l'Acte 1 n'est pas modifié
+- `DERNIER_ACTE` passe de 1 à 2 : la partie du Prototype se termine désormais par la victoire à la fin de l'Acte 2
+- Tests : 11 tests de l'acte, tests de session adaptés et complétés (parcours Acte 1 puis Acte 2 jusqu'à la victoire, défaite par jauge pleine à l'Acte 2) ; 63 tests passent
+- Simulateur : nouveau mode `acte2` et pause réglable par étape
+- Documentation : précision sur le PIR dans `docs/mqtt.md`, usage du simulateur dans `docs/installation.md`
+- Travail livré sur la branche `feature/acte2-autoplay`, pull request #13 fusionnée dans `main`
+
+### Difficultés rencontrées
+- J'ai d'abord écrit une machine à états de l'Acte 1 et le calcul de la jauge, alors que Sékou-Oumar les avait déjà poussés sur `main` : ma copie locale n'était pas à jour et je n'avais pas fait de `git pull`. La PR #12 a été abandonnée (conflits sur les mêmes fichiers). Je fais désormais un `git pull` avant chaque nouvelle tâche
+- Le capteur PIR ne détecte que le mouvement : des joueurs immobiles peuvent passer pour absents. Le délai de 10 s est provisoire, à régler avec le vrai capteur
+- Après l'Acte 1, la jauge est déjà à 0 (départ à 30, six actions à −5) : l'Acte 2 n'a plus de pression de jauge. Les valeurs de game design sont à revoir avec l'équipe
+- Le code Arduino de l'Acte 2 (`iot/acte2/acte2.ino`) n'est pas écrit : cela relève de l'IoT
+
+### Objectifs pour la semaine prochaine
+- Demander à Sékou-Oumar de relire la PR #13 (fusionnée avant sa relecture)
+- Tester le délai d'absence avec le vrai capteur PIR, avec Bassirou, et revoir les valeurs de la jauge
+- Choisir et traiter l'Acte 3 (panneau de câbles) ou la formule du score, à valider avec Yassine
+- Vérifier le démarrage complet avec Docker (toujours à faire)
+
+### Temps passé
+- 3h

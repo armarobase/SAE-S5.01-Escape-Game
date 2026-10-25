@@ -6,10 +6,12 @@
 const config = require('./config');
 const jauge = require('./jauge');
 const acte1 = require('./actes/acte1');
+const acte2 = require('./actes/acte2');
 
-// Actes disponibles. Les actes 2 à 4 seront ajoutés ici quand ils existeront.
+// Actes disponibles. Les actes 3 et 4 seront ajoutés ici quand ils existeront.
 // Le dernier acte jouable est réglé dans config.js (DERNIER_ACTE).
-const ACTES = { 1: acte1 };
+// Un acte fournit demarrer() et traiterMessage(), et facultativement tick(etat) s'il dépend du temps.
+const ACTES = { 1: acte1, 2: acte2 };
 
 // Effets renvoyés par la session :
 //   { type: 'etat_jeu', statut, acte }        statut ou acte courant modifié (topic datamonstre/jeu/etat)
@@ -60,6 +62,13 @@ function tick(partie) {
     terminer(partie, 'defaite', 'jauge pleine', effets);
   } else if (partie.tempsRestantS <= 0) {
     terminer(partie, 'defaite', 'temps écoulé', effets);
+  }
+
+  // Les actes qui dépendent du temps (ex. délai d'absence de l'Acte 2) avancent aussi d'une seconde,
+  // sauf si la partie vient de se terminer
+  const moduleActe = ACTES[partie.acteCourant];
+  if (partie.statut === 'en_cours' && moduleActe && moduleActe.tick) {
+    appliquerEffetsActe(partie, partie.acteCourant, moduleActe.tick(partie.etatActe), effets);
   }
   return effets;
 }

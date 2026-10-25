@@ -34,6 +34,18 @@ acte1.push(
   { libelle: 'Capteur de lumière couvert', topic: 'datamonstre/acte1/lumiere', valeur: 5, qos: 0 },
 );
 
+// Acte 2 : la salle de visionnage (PIR). Le backend résout l'énigme quand la salle reste vide
+// pendant DELAI_ABSENCE_S secondes (backend/src/game/config.js) : le dernier message envoyé,
+// le scénario se termine donc avant la résolution, qui arrive ensuite côté backend.
+// "pauseApresMs" remplace la pause par défaut du simulateur après l'étape.
+const acte2 = [
+  { libelle: 'Un joueur se place devant l\'écran', topic: 'datamonstre/acte2/presence', valeur: true, qos: 1 },
+  { libelle: 'Le joueur s\'éloigne', topic: 'datamonstre/acte2/presence', valeur: false, qos: 1, pauseApresMs: 5000 },
+  // Retour avant la fin du délai : le décompte de l'absence repart de zéro
+  { libelle: 'Le joueur revient (le décompte repart de zéro)', topic: 'datamonstre/acte2/presence', valeur: true, qos: 1 },
+  { libelle: 'Le joueur s\'éloigne pour de bon', topic: 'datamonstre/acte2/presence', valeur: false, qos: 1 },
+];
+
 // Messages incorrects : le backend doit les ignorer sans planter
 const invalide = [
   { libelle: 'JSON illisible', topic: 'datamonstre/acte1/bouton/1', brut: '{valeur: appui', qos: 1 },
@@ -44,4 +56,4 @@ const invalide = [
   { libelle: 'Message valide (appui bouton 1)', topic: 'datamonstre/acte1/bouton/1', valeur: 'appui', qos: 1 },
 ];
 
-module.exports = { acte1, invalide };
+module.exports = { acte1, acte2, invalide };
