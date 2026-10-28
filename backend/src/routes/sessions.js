@@ -82,6 +82,8 @@ router.post('/:id/terminer', async (req, res) => {
   if (moteur.idPartieEnCours() === session.id) moteur.arreter();
   await evenements.enregistrerEvenement({ sessionId: session.id, type: `session_${statut}` });
   const score = await scores.enregistrerScore(terminee);
+  // Les écrans affichent la fin de partie (après l'enregistrement du score, comme le demande le contrat)
+  moteur.diffuserEtat();
   res.json({ session: terminee, score });
 });
 

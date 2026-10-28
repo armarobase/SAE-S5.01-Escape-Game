@@ -63,4 +63,20 @@ module.exports = {
     // modifier les deux ensemble, sinon les valeurs du port en trop ne sont pas enregistrées en base.
     NB_PORTS: 4,
   },
+
+  // Documents narratifs (logs, mails) affichés sur l'écran de jeu (contrat frontend/websocket.md).
+  // Le texte est écrit dans le frontend ; ici, on décide seulement QUAND chaque document est débloqué.
+  // C'est une décision de game design, provisoire (à valider avec Adam) :
+  //   debloqueQuand: { acteResolu: 1 }                 quand toutes les énigmes de l'Acte 1 sont résolues
+  //   debloqueQuand: { enigmeResolue: 'acte1_badge' }  dès qu'une énigme précise est résolue
+  // fragmentActe : le document contient le fragment de code de cet acte (affiché dès qu'il est collecté).
+  DOCUMENTS: [
+    { id: 'acte1_log_notifications', debloqueQuand: { acteResolu: 1 } },
+    { id: 'acte1_mail_dsi', debloqueQuand: { acteResolu: 1 }, fragmentActe: 1 },
+    { id: 'acte2_log_autoplay', debloqueQuand: { acteResolu: 2 }, fragmentActe: 2 },
+    { id: 'acte2_mail_marketing', debloqueQuand: { acteResolu: 2 } },
+    { id: 'acte3_mail_reseau', debloqueQuand: { acteResolu: 3 }, fragmentActe: 3 },
+    { id: 'acte3_log_ports', debloqueQuand: { acteResolu: 3 } },
+    // acte4_alerte : moment du déblocage à décider avec l'Acte 4
+  ],
 };
