@@ -6,6 +6,7 @@ const pool = require('./db/pool');
 const { connecterMqtt } = require('./mqtt/client');
 const { enregistrerMessage } = require('./mqtt/persistance');
 const moteur = require('./game/moteur');
+const { attacherServeurWs } = require('./websocket/serveur');
 
 const app = express();
 app.use(express.json());
@@ -43,9 +44,13 @@ const clientMqtt = connecterMqtt(async (topic, data) => {
   moteur.traiterMessage(topic, data);
 });
 
-// Les ordres aux actionneurs (LED, bargraph, état du jeu) passent par ce client MQTT
-moteur.initialiser(clientMqtt);
+// Écrans de jeu : WebSocket sur le même port que l'API (ws://<hôte>:<port>/ws)
+const ecrans = attacherServeurWs(server, moteur.etatPourEcrans);
+
+// Les ordres aux actionneurs (LED, bargraph, état du jeu) passent par le client MQTT,
+// l'état de la partie part vers les écrans
+moteur.initialiser(clientMqtt, ecrans);
 
 server.listen(config.port, () => {
-  console.log(`[HTTP] Backend démarré sur http://localhost:${config.port}`);
+  console.log(`[HTTP] Backend démarré sur http://localhost:${config.port} (écrans : ws://localhost:${config.port}/ws)`);
 });
