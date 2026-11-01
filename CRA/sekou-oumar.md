@@ -118,3 +118,46 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 
 ---
 
+## Semaine du 26/10/2026 au 01/11/2026
+
+### Bilan des objectifs de la semaine précédente
+- Envoyer l'état de la partie au frontend par WebSocket : fait (PR #14)
+- Voir avec Ali le statut "abandonnee" et la durée par défaut de la session : [à confirmer]
+- Faire valider par l'équipe les valeurs de game design de config.js : [à confirmer]
+- Tester l'Acte 1 avec le vrai poste de Bassirou : reporté, la branche feature/iot-acte1 n'est pas encore fusionnée
+- Créer le backlog GitHub avec le jalon Prototype : [à confirmer]
+- Demander au professeur le nombre d'exemplaires de chaque équipement : [à confirmer]
+
+### Réalisé cette semaine
+- Serveur WebSocket attaché au serveur HTTP, sur le même port que l'API (/ws), avec la bibliothèque ws, compatible avec le WebSocket natif du navigateur
+- Diffusion de l'état de la partie selon le contrat d'Adam (frontend/websocket.md) : état complet à chaque connexion d'un écran et à chaque changement de structure, jauge quand sa valeur entière change, documents débloqués, état des postes
+- Ordre de traitement garanti : MQTT et base d'abord, écrans ensuite, pour que le score soit enregistré avant l'affichage de la fin de partie
+- État des postes mémorisé à partir des messages retained : il reste connu après un redémarrage du backend
+- Déblocage des documents narratifs réglable dans config.js (à la fin d'un acte ou à la résolution d'une énigme)
+- Faux écran en console (npm run ecran) pour vérifier le backend sans le frontend
+- 77 tests unitaires, dont des tests avec de vrais clients WebSocket
+- Test de bout en bout avec Mosquitto, PostgreSQL, le simulateur et le faux écran : partie complète des Actes 1 et 2, victoire et score enregistré, postes retrouvés après un redémarrage du backend
+- Documentation du Prototype (PR #15) : installation, architecture, nouveau guide d'équipe et déroulé de la démo (docs/demo-prototype.md) avec remise à zéro entre deux parties et plan B
+- Vérification du dépôt : pas de secret ni de gros fichier suivi, branches et commits contrôlés
+- Essai en local d'une proposition de design pour l'écran de jeu, à présenter à Adam : frontend remis en ordre pour qu'il se lance, ambiance cyberpunk de terminal de megacorp piraté, couleurs qui changent selon le niveau de la jauge, polices copiées dans le projet pour fonctionner sans internet. Rien n'est publié dans le dépôt
+
+### Difficultés rencontrées
+- Le frontend du dépôt ne se lance pas : les fichiers envoyés par l'interface web de GitHub sont à plat, alors que le code attend src/ et dev/. Une fois remis dans la bonne arborescence, il fonctionne et ses 25 tests passent. À corriger avec Adam
+- Le contrat WebSocket ne disait pas quand débloquer les documents ni comment suivre la jauge pendant l'inactivité : solutions appliquées en attendant l'avis d'Adam
+- Une session restée "en cours" après un arrêt du backend a de nouveau bloqué les parties : terminée en défaite sur ma base locale. Le statut "abandonnee" reste à prévoir avec Ali
+- Le service backend de docker-compose.yml ne peut pas se construire : backend/Dockerfile n'existe pas. La documentation indique de lancer le backend avec npm run dev
+- La branche feature/acte1-jauge d'Ali est un doublon de l'Acte 1 déjà fusionné, en conflit avec main : à ne pas fusionner
+
+### Objectifs pour la semaine prochaine
+- Présenter la proposition de design à Adam et corriger avec lui l'arborescence du frontend
+- Brancher le vrai frontend sur le backend et valider avec Adam les choix faits sur le contrat WebSocket
+- Tester l'Acte 1 avec le vrai poste de Bassirou : badge réel, seuils du slider et du capteur de lumière
+- Préparer et répéter la démo du jalon Prototype de mi-novembre
+- Voir avec Ali le statut "abandonnee", la durée par défaut de la session et le sort de sa branche feature/acte1-jauge
+- Faire valider par l'équipe les valeurs de game design de config.js
+
+### Temps passé
+- [à compléter]
+
+---
+
