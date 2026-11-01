@@ -37,3 +37,33 @@ J'ai ensuite fixé un rendez-vous avec le professeur le vendredi 23 octobre à 1
 **Objectifs pour la semaine prochaine**
 
 À partir de la semaine prochaine, je m'occupe de tout ce qui concerne le branchement du matériel IoT et sa connexion avec le backend.
+
+---
+
+**Semaine du 26/10/2026 au 01/11/2026**
+
+Cette semaine, j'ai commencé par contrôler le matériel récupéré et par identifier chaque pièce. J'ai notamment vérifié que la carte à utiliser pour l'Acte 1 est bien la MKR WiFi 1010, et que l'Ethernet Shield 2 ne lui est pas destinée : elle servira à l'Acte 3, avec la carte Mega. J'ai aussi relu le code du backend (la logique de jeu, la validation des messages MQTT et la démonstration du Prototype) pour vérifier que mon programme respecte les seuils et les formats attendus : seuil du slider à 20, seuil de la lumière à 15, trois boutons, et un délai d'absence de 10 secondes.
+
+J'ai ensuite préparé mon poste de travail. J'ai cloné le dépôt sur mon PC, puis j'ai intégré la branche main dans ma branche feature/iot-acte1 afin de travailler sur la version la plus récente du projet.
+
+J'ai installé Docker Desktop, créé le fichier .env avec le compte MQTT, puis lancé avec docker compose le broker Mosquitto et la base PostgreSQL. J'ai relevé l'adresse IPv4 de mon PC sur le réseau de la box et ajouté une règle de pare-feu pour autoriser le port 1883, afin que la carte puisse joindre le broker. Un terminal d'écoute (mosquitto_sub) me permet de voir passer tous les messages du projet, et le broker et la base démarrent correctement.
+
+Côté Arduino, j'ai installé l'IDE Arduino 2.3.10, le paquet de cartes SAMD, puis les bibliothèques WiFiNINA et ArduinoMqttClient. J'ai créé mon fichier secrets.h à partir du modèle, avec le WiFi en 2,4 GHz, l'adresse du broker et le compte MQTT. Le programme de l'Acte 1 compile, je l'ai téléversé sur la carte, et elle se connecte bien au WiFi puis au broker. Le moniteur série montre les messages publiés (par exemple sur datamonstre/acte1/slider), et ils arrivent bien dans le terminal d'écoute.
+
+**Difficultés rencontrées**
+
+Plusieurs étapes ont été bloquantes. Le clonage du dépôt privé a d'abord échoué car GitHub n'accepte plus le mot de passe : j'ai configuré le gestionnaire d'identifiants Git et me suis connecté par le navigateur. L'installation de Docker Desktop a échoué à deux reprises, d'abord parce que la fonctionnalité Virtual Machine Platform n'était pas activée (installation de WSL nécessaire), puis avec l'erreur « Data Error » qui m'a obligé à retélécharger l'installateur. Lors de la compilation, il manquait les bibliothèques WiFiNINA et ArduinoMqttClient, dont l'installation avait été interrompue, et je les ai réinstallées depuis le gestionnaire de bibliothèques. Mon PC a aussi redémarré en cours de route, ce qui m'a obligé à relancer Docker, le terminal d'écoute et le téléversement.
+
+Sur le réseau, mon PC est en Ethernet alors que la carte est en WiFi : j'ai dû vérifier que les deux sont sur la même box, que le WiFi est bien en 2,4 GHz (la carte ne gère pas le 5 GHz) et utiliser l'adresse IP de mon PC comme adresse du broker. J'ai également confondu au début l'Ethernet Shield 2 avec la MKR WiFi 1010, ce qui m'a fait perdre un peu de temps avant de retrouver les bonnes boîtes.
+
+Enfin, comme aucun module n'est encore branché, les entrées analogiques flottent et envoient des valeurs aléatoires : c'est normal à ce stade mais cela rend les messages du slider et de la lumière inutilisables pour l'instant. Je me suis aussi rendu compte que le Connector Carrier présente plus de connecteurs que ce que je pensais la semaine du 12/10 ; je vérifierai les étiquettes sur le matériel pour corriger l'affectation des broches si besoin.
+
+**Objectifs pour la semaine prochaine**
+
+Je n'ai pas pu aller plus loin cette semaine à cause de la révision des partiels. Je reprends le mardi 03/11 à l'étape du branchement des modules. Je commencerai par clipser la carte MKR sur le Connector Carrier, puis je relèverai les étiquettes des connecteurs en photo pour associer chaque module à la bonne broche et corriger les broches en haut du programme si nécessaire.
+
+Je testerai ensuite les modules un par un en suivant les messages dans le terminal d'écoute : les trois boutons, les trois LED (commandées en publiant un ordre « on » ou « off » depuis le broker), le slider et le capteur de lumière, pour lesquels je relèverai les valeurs réelles afin de valider les seuils d'envoi, puis le lecteur RFID. Pour le RFID, je vérifierai la fréquence du lecteur, la tension d'alimentation par rapport au 3,3 V de la MKR et le format de l'identifiant lu.
+
+Une fois les modules validés, je lancerai le backend (npm install, tests, puis npm run dev), je vérifierai qu'il répond sur son adresse de santé et que l'écran s'ouvre, puis je lancerai une partie. Je passerai un badge pour récupérer son identifiant réel, que j'ajouterai à la liste des badges autorisés du backend (fichier de Sékou, via une pull request), et je rejouerai l'Acte 1 en entier avec le matériel pour vérifier que le backend réagit comme prévu.
+
+Pour terminer, je pousserai mes corrections sur la branche feature/iot-acte1 et je ferai relire puis fusionner la pull request numéro 8. Je mettrai aussi à jour le contrat MQTT (format de l'identifiant RFID et seuils) et le badge de test du simulateur, puis je commencerai le programme de l'Acte 2 avec le capteur de présence PIR, en vue du Prototype de la mi-novembre.
