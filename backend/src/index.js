@@ -5,6 +5,8 @@ const config = require('./config');
 const pool = require('./db/pool');
 const { connecterMqtt } = require('./mqtt/client');
 const { enregistrerMessage } = require('./mqtt/persistance');
+const moteur = require('./game/moteur');
+const { attacherServeurWs } = require('./websocket/serveur');
 
 const app = express();
 app.use(express.json());
@@ -31,16 +33,24 @@ app.use((err, req, res, next) => {
 
 const server = http.createServer(app);
 
-connecterMqtt(async (topic, data) => {
+const clientMqtt = connecterMqtt(async (topic, data) => {
   console.log(`[MQTT] ${topic}`, data);
   try {
     await enregistrerMessage(topic, data);
   } catch (err) {
     console.error('[DB] Enregistrement du message impossible :', err.message);
   }
-  // TODO : transmettre le message à la machine à états de l'acte concerné (game/actes)
+  // Transmission à la logique de jeu (seuls les messages des capteurs sont pris en compte)
+  moteur.traiterMessage(topic, data);
 });
 
+// Écrans de jeu : WebSocket sur le même port que l'API (ws://<hôte>:<port>/ws)
+const ecrans = attacherServeurWs(server, moteur.etatPourEcrans);
+
+// Les ordres aux actionneurs (LED, bargraph, état du jeu) passent par le client MQTT,
+// l'état de la partie part vers les écrans
+moteur.initialiser(clientMqtt, ecrans);
+
 server.listen(config.port, () => {
-  console.log(`[HTTP] Backend démarré sur http://localhost:${config.port}`);
+  console.log(`[HTTP] Backend démarré sur http://localhost:${config.port} (écrans : ws://localhost:${config.port}/ws)`);
 });

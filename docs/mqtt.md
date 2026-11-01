@@ -53,7 +53,7 @@ Précisions :
 
 - **Slider et lumière** : valeur ramenée sur 0 à 100 par la carte. En plus du seuil de 5, une carte n'envoie pas plus de 5 messages par seconde pour un même capteur.
 - **Bouton** : la carte signale l'appui, c'est le backend qui bascule l'état (coupé ou actif) et renvoie l'ordre à la LED.
-- **Présence (PIR)** : la carte envoie l'état brut du capteur. Le délai avant de considérer la salle vide est appliqué par le backend (réglable).
+- **Présence (PIR)** : la carte envoie l'état brut du capteur. Le délai avant de considérer la salle vide est appliqué par le backend (réglable, `DELAI_ABSENCE_S` dans `backend/src/game/config.js`). Le backend ne compte l'absence qu'après avoir reçu au moins un `true` pendant l'Acte 2 : la carte doit donc bien publier `true` quand quelqu'un est détecté, et ne rien envoyer tant que l'état ne change pas.
 - **Ports de l'Acte 3** : au démarrage, la carte publie l'état de tous ses ports, pour que le backend connaisse la situation de départ.
 - **Code de l'Acte 4** : la saisie chiffre par chiffre (joystick) est gérée localement par la carte, qui l'affiche sur le LCD. Seul le code complet est envoyé ; la vérification se fait uniquement côté backend.
 
