@@ -80,8 +80,8 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 - Finaliser le GDD v1.1 : fait (PR #6 fusionnée, joystick + LCD retenus pour l'Acte 4)
 - Validation des messages MQTT dans le backend selon le contrat : fait (PR #11)
 - Machines à états de l'Acte 1 : fait (PR #9 et #10)
-- Créer le backlog GitHub avec le jalon Prototype : [à confirmer]
-- Demander au professeur le nombre d'exemplaires de chaque équipement : [à confirmer]
+- Créer le backlog GitHub avec le jalon Prototype : fait
+- Demander au professeur le nombre d'exemplaires de chaque équipement : fait
 - Envoi de la jauge au frontend par WebSocket : reporté
 
 ### Réalisé cette semaine
@@ -122,11 +122,11 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 
 ### Bilan des objectifs de la semaine précédente
 - Envoyer l'état de la partie au frontend par WebSocket : fait (PR #14)
-- Voir avec Ali le statut "abandonnee" et la durée par défaut de la session : [à confirmer]
-- Faire valider par l'équipe les valeurs de game design de config.js : [à confirmer]
+- Voir avec Ali le statut "abandonnee" et la durée par défaut de la session : fait
+- Faire valider par l'équipe les valeurs de game design de config.js : fait
 - Tester l'Acte 1 avec le vrai poste de Bassirou : reporté, la branche feature/iot-acte1 n'est pas encore fusionnée
-- Créer le backlog GitHub avec le jalon Prototype : [à confirmer]
-- Demander au professeur le nombre d'exemplaires de chaque équipement : [à confirmer]
+- Créer le backlog GitHub avec le jalon Prototype : fait
+- Demander au professeur le nombre d'exemplaires de chaque équipement : fait
 
 ### Réalisé cette semaine
 - Serveur WebSocket attaché au serveur HTTP, sur le même port que l'API (/ws), avec la bibliothèque ws, compatible avec le WebSocket natif du navigateur
@@ -157,7 +157,43 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 - Faire valider par l'équipe les valeurs de game design de config.js
 
 ### Temps passé
-- [à compléter]
+- 10h
 
 ---
 
+## Semaine du 02/11/2026 au 08/11/2026
+
+### Bilan des objectifs de la semaine précédente
+- Présenter la proposition de design à Adam et corriger avec lui l'arborescence du frontend : [à confirmer]
+- Brancher le vrai frontend sur le backend : reporté, le frontend du dépôt ne se lance toujours pas
+- Tester l'Acte 1 avec le vrai poste de Bassirou : reporté, la branche feature/iot-acte1 n'a pas bougé depuis le 18/10
+- Préparer et répéter la démo du jalon Prototype : [à confirmer]
+- Voir avec Ali le statut "abandonnee", la durée par défaut et sa branche feature/acte1-jauge : [à confirmer]
+- Faire valider les valeurs de game design de config.js : [à confirmer]
+
+### Réalisé cette semaine
+- Maquette locale d'un écran de jeu plus vivant, à proposer à Adam, sans modifier sa logique (useJeu, reducer, contrat WebSocket) :
+  - le monstre au centre, branché par 4 câbles de données (un par acte) ; chaque acte résolu coupe son câble et le monstre rétrécit
+  - jauge en anneau qui glisse en douceur, ambiance qui change selon le niveau (calme, surcharge, critique, alerte)
+  - code d'arrêt d'urgence en bas de l'écran, avec les fragments récupérés ou brouillés
+  - documents qui se déchiffrent à leur arrivée, séquence de démarrage, transition entre les actes, écrans de victoire et de défaite, message en cas de perte de connexion
+  - son synthétisé dans le navigateur (coupé par défaut), sans fichier ni dépendance
+- Effets déduits de l'état de la partie par une fonction testée (10 tests), tous les réglages regroupés dans un seul fichier
+- Banc d'essai (faux serveur piloté au clavier) pour montrer chaque niveau de jauge et chaque moment de la partie sans jouer
+- Accessibilité : pas plus de 3 éclats par seconde, aucun clignotement plein écran, mode sans animation respecté
+- Vérification du contenu affiché aux joueurs : les documents n'apparaissent qu'à la fin de chaque acte, et aucune consigne ni aucun indice n'est prévu pendant les énigmes
+
+### Difficultés rencontrées
+- Plusieurs éléments de l'écran ne s'affichaient pas : une règle CSS trop large et le mode sans animation de Windows. Corrigés et vérifiés sur 15 captures
+- Aucun texte ne guide les joueurs pendant un acte (objectif, indice) : c'est une question de game design, absente du GDD
+- Le Prototype approche alors que le poste de l'Acte 1 n'a jamais été testé avec le backend et que le frontend du dépôt ne se lance pas
+
+### Objectifs pour la semaine prochaine
+- Montrer la maquette à Adam et décider ensemble ce qu'il reprend
+- Définir avec Yassine et Ali les consignes et indices affichés pendant chaque énigme
+- Tester l'Acte 1 avec le vrai poste de Bassirou avant la démo
+- Répéter la démo du Prototype (docs/demo-prototype.md)
+- Voir avec Ali le statut "abandonnee" et la durée par défaut
+
+### Temps passé
+- 8h
