@@ -33,7 +33,7 @@ module.exports = {
     // modifier les deux ensemble, sinon les valeurs du bouton en trop ne sont pas enregistrées en base.
     NB_BOUTONS: 3,
     // Identifiants des badges acceptés (celui du simulateur, en attendant les vrais badges)
-    BADGES_AUTORISES: ['04A1B2C3'],
+    BADGES_AUTORISES: ['04A1B2C3', '1D00CC4C6E'],
     // Luminosité considérée comme baissée quand le slider passe sous cette valeur (0 à 100)
     SEUIL_SLIDER: 20,
     // Capteur considéré comme couvert sous cette valeur (0 à 100). Une main fait tomber
