@@ -17,8 +17,8 @@
 // Câblage (à adapter au branchement réel sur le Connector Carrier)
 // ---------------------------------------------------------------------------
 const int NB_BOUTONS = 3;                                // docs/mqtt.md §9 : 3 boutons (à valider)
-const int PIN_BOUTONS[NB_BOUTONS] = { A3, A4, A5 };      // boutons poussoirs Grove
-const int PIN_LEDS[NB_BOUTONS]    = { A6, 0, 1 };        // LED Grove (port A6, D0, D1)
+const int PIN_BOUTONS[NB_BOUTONS] = { 0, 1, 2 };      // boutons Grove : connecteurs 0, 1, 2
+const int PIN_LEDS[NB_BOUTONS]    = { 3, A4, A3 };        // LED Grove : connecteurs 3, A4, A3
 const int PIN_SLIDER  = A1;                              // potentiomètre rectiligne Grove
 const int PIN_LUMIERE = A2;                              // capteur de lumière Grove
 // Lecteur RFID Grove 125 kHz : port "SERIAL" du Carrier (Serial1, 9600 bauds)
