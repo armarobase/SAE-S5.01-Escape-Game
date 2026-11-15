@@ -1,6 +1,8 @@
 // Lecture de la configuration depuis le fichier .env à la racine du dépôt
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
+// quiet : pas de message "injected env" au démarrage. Dans Docker, le fichier n'existe pas :
+// les variables sont fournies par docker-compose.yml (env_file), dotenv ne fait alors rien.
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env'), quiet: true });
 
 module.exports = {
   port: Number(process.env.PORT) || 3000,
