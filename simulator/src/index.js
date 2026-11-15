@@ -1,6 +1,6 @@
 // Simulateur de capteurs : publie les messages du contrat MQTT comme le ferait une carte.
-// Utilisation : npm start (Acte 1), npm start -- acte2 ou npm start -- invalide
-// L'Acte 2 ne se joue qu'une fois l'Acte 1 résolu : lancer d'abord le mode par défaut.
+// Utilisation : npm start (Acte 1), npm start -- acte2, npm start -- acte3 ou npm start -- invalide
+// Chaque acte ne se joue qu'une fois le précédent résolu : lancer les modes dans l'ordre.
 const mqtt = require('mqtt');
 const config = require('./config');
 const scenarios = require('./scenarios');

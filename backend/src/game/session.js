@@ -7,16 +7,18 @@ const config = require('./config');
 const jauge = require('./jauge');
 const acte1 = require('./actes/acte1');
 const acte2 = require('./actes/acte2');
+const acte3 = require('./actes/acte3');
 
-// Actes disponibles. Les actes 3 et 4 seront ajoutés ici quand ils existeront.
+// Actes disponibles. L'Acte 4 sera ajouté ici quand il existera.
 // Le dernier acte jouable est réglé dans config.js (DERNIER_ACTE).
 // Un acte fournit demarrer() et traiterMessage(), et facultativement tick(etat) s'il dépend du temps.
-const ACTES = { 1: acte1, 2: acte2 };
+const ACTES = { 1: acte1, 2: acte2, 3: acte3 };
 
 // Effets renvoyés par la session :
 //   { type: 'etat_jeu', statut, acte }        statut ou acte courant modifié (topic datamonstre/jeu/etat)
 //   { type: 'jauge', valeur, cause }          nouvelle valeur exacte de la jauge ; cause : 'depart',
-//                                             'inactivite' (chaque seconde) ou 'action' (joueurs)
+//                                             'inactivite' (chaque seconde), 'action' (joueurs) ou 'erreur'
+//   { type: 'erreur', acte, raison }          erreur des joueurs (jauge en hausse), à compter et journaliser
 //   { type: 'led', acte, numero, valeur }     LED d'un poste à allumer ou éteindre
 //   { type: 'enigme', acte, code, etat }      une énigme change d'état
 //   { type: 'fragment', acte, valeur, ordre } fragment du code final collecté
@@ -115,6 +117,11 @@ function appliquerEffetsActe(partie, numero, effetsActe, effets) {
       partie.jauge = jauge.appliquerAction(partie.jauge);
       partie.secondesSansAction = 0;
       effets.push({ type: 'jauge', valeur: partie.jauge, cause: 'action' });
+    } else if (effet.type === 'erreur') {
+      // Erreur : la jauge monte, mais le compteur d'inactivité continue (ce n'est pas une action utile)
+      partie.jauge = jauge.appliquerErreur(partie.jauge);
+      effets.push({ type: 'jauge', valeur: partie.jauge, cause: 'erreur' });
+      effets.push({ type: 'erreur', acte: numero, raison: effet.raison });
     } else if (effet.type === 'acte_resolu') {
       if (effet.fragment !== undefined) {
         const fragment = { acte: numero, valeur: effet.fragment, ordre: effet.ordre };
@@ -133,7 +140,7 @@ function appliquerEffetsActe(partie, numero, effetsActe, effets) {
 
 function passerActeSuivant(partie, effets) {
   // La résolution du dernier acte jouable donne la victoire
-  // (à terme l'Acte 4 : code final saisi ; pour le Prototype, l'Acte 1)
+  // (à terme l'Acte 4 : code final saisi)
   if (partie.acteCourant >= config.DERNIER_ACTE) {
     terminer(partie, 'victoire', `acte ${partie.acteCourant} résolu (dernier acte)`, effets);
     return;

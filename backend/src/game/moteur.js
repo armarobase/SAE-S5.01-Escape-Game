@@ -213,6 +213,14 @@ async function appliquerEffet(effet) {
       console.log(`[Jeu] Énigme ${effet.code} : ${effet.etat}`);
       break;
 
+    case 'erreur':
+      await sessionsDb.ajouterErreur(id);
+      await evenementsDb.enregistrerEvenement({
+        sessionId: id, type: 'erreur', message: effet.raison, donnees: { acte: effet.acte },
+      });
+      console.log(`[Jeu] Erreur (acte ${effet.acte}) : ${effet.raison}`);
+      break;
+
     case 'fragment':
       await fragmentsDb.ajouterFragment({
         sessionId: id, acte: effet.acte, valeur: effet.valeur, ordreAssemblage: effet.ordre,

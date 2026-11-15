@@ -7,9 +7,9 @@ module.exports = {
   DUREE_PARTIE_S: 40 * 60,
 
   // Dernier acte jouable : sa résolution donne la victoire.
-  // 2 pour le jalon Prototype (Acte 1 complet + une énigme d'un acte suivant) ; passera à 4
-  // quand les autres actes existeront.
-  DERNIER_ACTE: 2,
+  // 3 tant que l'Acte 4 n'existe pas (Acte 1 + Acte 2 + Acte 3) ; passera à 4 avec lui.
+  // Remettre 2 pour rejouer la démo du jalon Prototype (victoire à la fin de l'Acte 2).
+  DERNIER_ACTE: 3,
 
   jauge: {
     MIN: 0,
@@ -62,6 +62,18 @@ module.exports = {
     // Doit rester identique aux ports déclarés dans database/migrations/002_capteurs.sql :
     // modifier les deux ensemble, sinon les valeurs du port en trop ne sont pas enregistrées en base.
     NB_PORTS: 4,
+    // Ports dont la liaison est encore utile : ils doivent rester branchés. Tous les autres
+    // sont à débrancher. D'après le mail acte3_mail_reseau (3 liaisons oubliées : projet de test,
+    // sauvegarde en double, serveur de démonstration), seul le port 1 sert encore.
+    // À garder cohérent avec le plan de câblage placé dans le décor.
+    PORTS_ACTIFS: [1],
+    // Durée pendant laquelle la bonne configuration doit rester stable avant de résoudre l'énigme.
+    // Évite de valider sur un faux contact ou un câble qu'on effleure. 0 : résolution immédiate.
+    DELAI_CONFIRMATION_S: 2,
+    // Fragment du code final livré à la fin de l'acte, et sa place dans le code assemblé
+    // (voir acte1 : "4" / "27" / "1").
+    FRAGMENT: '1',
+    ORDRE_FRAGMENT: 3,
   },
 
   // Documents narratifs (logs, mails) affichés sur l'écran de jeu (contrat frontend/websocket.md).
