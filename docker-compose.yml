@@ -5,6 +5,8 @@ services:
       - "1883:1883"
     volumes:
       - ./mosquitto/config:/mosquitto/config
+    # Redémarre tout seul (plantage, redémarrage du Raspberry Pi pendant la JPO)
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
@@ -17,19 +19,31 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    # La base est "prête" quand elle accepte des connexions (utilisé par le backend)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   backend:
     build: ./backend
     env_file: .env
     environment:
-      # Dans Docker, les services se joignent par leur nom
+      # Dans Docker, les services se joignent par leur nom, sur leur port interne
       MQTT_URL: mqtt://mosquitto:1883
       DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
     ports:
       - "3000:3000"
+    restart: unless-stopped
     depends_on:
-      - mosquitto
-      - postgres
+      mosquitto:
+        condition: service_started
+      # Le backend attend que la base accepte les connexions avant de démarrer
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:

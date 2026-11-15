@@ -1,0 +1,5 @@
+# Fichiers inutiles dans l'image du backend
+node_modules
+tests
+npm-debug.log
+.env
