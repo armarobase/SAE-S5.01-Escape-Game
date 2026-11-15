@@ -82,7 +82,8 @@ function messagePoste(acte, statut) {
 }
 
 // Effets de la session qui changent la structure de la partie : il faut renvoyer un "etat" complet
-const EFFETS_STRUCTURELS = ['etat_jeu', 'enigme', 'fragment', 'fin'];
+// 'erreur' : le nombre d'erreurs fait partie de l'état envoyé aux écrans
+const EFFETS_STRUCTURELS = ['etat_jeu', 'enigme', 'fragment', 'erreur', 'fin'];
 
 function demandeEtatComplet(effets) {
   return effets.some((effet) => EFFETS_STRUCTURELS.includes(effet.type));
