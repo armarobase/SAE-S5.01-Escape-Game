@@ -59,7 +59,8 @@ Tout fonctionne en réseau local, sans internet. Les contrats d'échange font r�
 | `game/session.js` | Déroulement d'une partie : temps, jauge, acte en cours, victoire et défaite |
 | `game/actes/acte1.js` | Machine à états de l'Acte 1 (badge, notifications, écran, veille) |
 | `game/actes/acte2.js` | Machine à états de l'Acte 2 (capteur de présence) |
-| `game/actes/acte3.js`, `acte4.js` | Vides pour l'instant |
+| `game/actes/acte3.js` | Machine à états de l'Acte 3 (panneau de brassage : ports à débrancher, LED vertes et rouges) |
+| `game/actes/acte4.js` | Vide pour l'instant |
 | `game/moteur.js` | Couche de liaison : timer, aiguillage des messages, application des effets |
 | `websocket/serveur.js` | Serveur WebSocket `/ws` : état à la connexion, diffusion aux écrans |
 | `websocket/messages.js` | Fabrication des messages du contrat WebSocket (fonctions pures) |

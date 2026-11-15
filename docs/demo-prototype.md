@@ -1,6 +1,6 @@
 # Démo du Prototype
 
-Déroulé de la démonstration du jalon Prototype (mi-novembre) : Acte 1 complet et Acte 2 (capteur de présence). La victoire arrive à la fin de l'Acte 2 (`DERNIER_ACTE: 2` dans `backend/src/game/config.js`).
+Déroulé de la démonstration du jalon Prototype (mi-novembre) : Acte 1 complet et Acte 2 (capteur de présence). Pour que la victoire arrive à la fin de l'Acte 2, mettre `DERNIER_ACTE: 2` dans `backend/src/game/config.js` : depuis l'ajout de l'Acte 3, la valeur par défaut est 3 (victoire à la fin de l'Acte 3, voir `docs/installation.md` pour le simulateur).
 
 Les commandes sont détaillées dans `docs/installation.md`.
 
