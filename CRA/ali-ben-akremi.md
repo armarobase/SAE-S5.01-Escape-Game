@@ -67,7 +67,7 @@ Rôles : base de données, architecture, game design, backend, IoT
 ## Semaine du 26/10/2026 au 01/11/2026
 
 ### Réalisé cette semaine
-- Aucun développement cette semaine : j'ai consacré mon temps aux révisions des DSR (devoirs surveillés de ressources)
+- Aucun développement cette semaine : j'ai consacré mon temps aux révisions des DST
 - Je suis resté joignable pour l'équipe et j'ai répondu aux questions de mes camarades, notamment Sékou-Oumar
 
 ### Difficultés rencontrées
