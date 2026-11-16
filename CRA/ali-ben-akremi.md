@@ -63,3 +63,71 @@ Rôles : base de données, architecture, game design, backend, IoT
 
 ### Temps passé
 - 3h
+
+## Semaine du 26/10/2026 au 01/11/2026
+
+### Réalisé cette semaine
+- Aucun développement cette semaine : j'ai consacré mon temps aux révisions des DST
+- Je suis resté joignable pour l'équipe et j'ai répondu aux questions de mes camarades, notamment Sékou-Oumar
+
+### Difficultés rencontrées
+- Charge de révisions importante, incompatible avec un travail de fond sur le projet
+- Les relectures de PR que je m'étais fixées (PR #13) n'ont pas pu être traitées
+
+### Objectifs pour la semaine prochaine
+- Reprendre le projet dès que les évaluations sont passées
+- Faire le point avec l'équipe sur ce qui a avancé pendant mon absence (`git pull` avant de recommencer)
+
+### Temps passé
+- 0h
+
+## Semaine du 02/11/2026 au 08/11/2026
+
+### Réalisé cette semaine
+- Aucun développement cette semaine : semaine des DST, pendant laquelle j'ai été malade et pas en état de travailler
+- J'ai tout de même essayé de rester présent pour l'équipe : j'ai aidé mes camarades à distance, notamment Sékou-Oumar
+
+### Difficultés rencontrées
+- Maladie pendant la semaine des DST : indisponibilité pour le projet
+- Deux semaines consécutives sans contribution au code (26/10 au 08/11) : le retard est à rattraper avant le jalon Prototype
+
+### Objectifs pour la semaine prochaine
+- Reprendre le développement avec l'Acte 3 (panneau de brassage), qui n'avait pas encore été traité
+- Se resynchroniser avec l'équipe sur l'état de `main`
+
+### Temps passé
+- 0h
+
+## Semaine du 09/11/2026 au 15/11/2026
+
+### Réalisé cette semaine
+- Acte 3 « La salle de brassage » (énigme « Tri des connexions », boucles de câble), `backend/src/game/actes/acte3.js` :
+  - les joueurs débranchent les câbles des liaisons inutiles et laissent les liaisons actives ; les ports à garder sont réglables (`PORTS_ACTIFS` dans `game/config.js`, seul le port 1 pour l'instant, d'après le mail de l'Acte 3 du frontend)
+  - LED verte tant que le câble est branché, rouge dès qu'il est débranché
+  - débrancher un port inutile fait baisser la jauge, une seule fois par port, pour éviter de la faire baisser en débranchant et rebranchant en boucle
+  - débrancher un port encore actif est une erreur : la jauge monte, le rebrancher est gratuit
+  - l'énigme est résolue quand la bonne configuration reste stable 2 s (`DELAI_CONFIRMATION_S`), pour ne pas valider sur un faux contact
+  - l'acte livre son fragment du code final (`"1"`, troisième position, soit le code 4-27-1)
+- Nouvel effet `erreur` dans la session (`game/session.js`, `game/moteur.js`) : la jauge monte sans remettre l'inactivité à zéro, le compteur `nb_erreurs` de la base est incrémenté (il entre dans le score) et l'erreur est inscrite au journal ; les écrans reçoivent un état complet à chaque erreur (`websocket/messages.js`)
+- `DERNIER_ACTE` passe de 2 à 3 : la partie se termine désormais par la victoire à la fin de l'Acte 3
+- Tests : 16 tests de l'acte, tests de session adaptés (Acte 2 puis Acte 3 jusqu'à la victoire, erreur, messages d'actes précédents ignorés) ; 97 tests passent
+- Simulateur : nouveau mode `acte3` (une erreur, puis les ports 2 à 4 débranchés)
+- Programme du poste de l'Acte 3 (`iot/acte3/acte3.ino`) : Arduino Mega + Ethernet Shield, lecture des boucles avec anti-rebond, commande des LED, statut du poste avec Last Will
+- Documentation : contrat MQTT (couleurs des LED, état initial des ports), installation, architecture, guide d'équipe, démo du Prototype
+- Travail livré sur la branche `feature/acte3-brassage`
+
+### Difficultés rencontrées
+- La carte ne republie pas l'état d'un port qui n'a pas changé, et le backend ignore les messages des actes qui ne sont pas en cours : un câble débranché avant le début de l'Acte 3 ne serait pas détecté. Le backend suppose donc tous les câbles branchés au début de l'acte ; à prévoir dans la remise à zéro entre deux parties
+- Le programme du poste n'a pas pu être compilé ni testé sur la carte, faute de matériel monté : les broches sont à adapter au panneau réel
+- Le passage de `DERNIER_ACTE` à 3 change la démo du Prototype (victoire à la fin de l'Acte 2) : il faut remettre 2 pour la rejouer
+- Les valeurs de game design de l'Acte 3 (port 1 seul actif, délai de 2 s, pénalité d'erreur) sont provisoires
+
+### Objectifs pour la semaine prochaine
+- Ouvrir la pull request de `feature/acte3-brassage` et la faire relire par Sékou-Oumar
+- Valider avec Yassine les ports à garder et les valeurs de l'Acte 3, et le plan de câblage du décor
+- Tester le poste de l'Acte 3 sur le matériel avec Bassirou
+- Traiter l'Acte 4 (saisie du code final) ou la formule du score
+- Vérifier le démarrage complet avec Docker (toujours à faire)
+
+### Temps passé
+- 6h

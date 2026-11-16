@@ -46,6 +46,18 @@ const acte2 = [
   { libelle: 'Le joueur s\'éloigne pour de bon', topic: 'datamonstre/acte2/presence', valeur: false, qos: 1 },
 ];
 
+// Acte 3 : la salle de brassage (panneau de câbles). Le plan de câblage du décor ne garde que le
+// port 1 (backend/src/game/config.js, PORTS_ACTIFS) : les ports 2 à 4 sont à débrancher.
+// Le backend confirme la configuration après DELAI_CONFIRMATION_S secondes sans changement : la
+// résolution arrive donc après la dernière étape. Les 4 câbles sont branchés au début de l'acte.
+const acte3 = [
+  { libelle: 'Un joueur se trompe : il débranche le port 1 (encore actif)', topic: 'datamonstre/acte3/port/1', valeur: 'debranche', qos: 1 },
+  { libelle: 'Il le rebranche', topic: 'datamonstre/acte3/port/1', valeur: 'branche', qos: 1 },
+  { libelle: 'Port 2 débranché (ancien projet de test)', topic: 'datamonstre/acte3/port/2', valeur: 'debranche', qos: 1 },
+  { libelle: 'Port 3 débranché (serveur de démonstration)', topic: 'datamonstre/acte3/port/3', valeur: 'debranche', qos: 1 },
+  { libelle: 'Port 4 débranché (sauvegarde en double)', topic: 'datamonstre/acte3/port/4', valeur: 'debranche', qos: 1 },
+];
+
 // Messages incorrects : le backend doit les ignorer sans planter
 const invalide = [
   { libelle: 'JSON illisible', topic: 'datamonstre/acte1/bouton/1', brut: '{valeur: appui', qos: 1 },
@@ -56,4 +68,4 @@ const invalide = [
   { libelle: 'Message valide (appui bouton 1)', topic: 'datamonstre/acte1/bouton/1', valeur: 'appui', qos: 1 },
 ];
 
-module.exports = { acte1, acte2, invalide };
+module.exports = { acte1, acte2, acte3, invalide };

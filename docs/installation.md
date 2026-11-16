@@ -113,10 +113,11 @@ La partie dure 40 minutes. Voir la partie en cours : `Invoke-RestMethod http://l
 cd simulator
 npm start              # scénario complet de l'Acte 1
 npm start -- acte2     # Acte 2 (capteur de présence), une fois l'Acte 1 résolu
+npm start -- acte3     # Acte 3 (panneau de brassage), une fois l'Acte 2 résolu
 npm start -- invalide  # messages incorrects : le backend doit les refuser sans s'arrêter
 ```
 
-Pour l'Acte 2, le backend résout l'énigme quand la salle reste vide pendant `DELAI_ABSENCE_S` secondes (10 s, réglable dans `backend/src/game/config.js`) : le scénario se termine avant, la résolution apparaît ensuite. Avec le réglage actuel (`DERNIER_ACTE: 2`), la fin de l'Acte 2 donne la victoire.
+Pour l'Acte 2, le backend résout l'énigme quand la salle reste vide pendant `DELAI_ABSENCE_S` secondes (10 s, réglable dans `backend/src/game/config.js`) : le scénario se termine avant, la résolution apparaît ensuite. Pour l'Acte 3, le scénario simule une erreur (port 1 débranché puis rebranché, la jauge monte de 3 points), puis débranche les ports 2 à 4 : le backend résout l'énigme après `DELAI_CONFIRMATION_S` secondes (2 s) sans changement. Avec le réglage actuel (`DERNIER_ACTE: 3`), la fin de l'Acte 3 donne la victoire.
 
 Voir les scores : `Invoke-RestMethod http://localhost:3000/api/scores`.
 

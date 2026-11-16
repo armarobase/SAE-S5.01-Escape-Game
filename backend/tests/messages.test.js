@@ -91,4 +91,6 @@ test('un "etat" complet est demandé pour les changements de structure seulement
   assert.equal(messages.demandeEtatComplet([{ type: 'led', acte: 1, numero: 1, valeur: 'off' }]), false);
   assert.equal(messages.demandeEtatComplet([{ type: 'enigme', acte: 1, code: 'acte1_badge', etat: 'resolue' }]), true);
   assert.equal(messages.demandeEtatComplet([{ type: 'fin', statut: 'victoire', raison: '' }]), true);
+  // Le nombre d'erreurs fait partie de l'état envoyé aux écrans
+  assert.equal(messages.demandeEtatComplet([{ type: 'erreur', acte: 3, raison: 'port 1' }]), true);
 });

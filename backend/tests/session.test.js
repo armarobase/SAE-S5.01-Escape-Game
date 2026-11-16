@@ -6,6 +6,8 @@ const config = require('../src/game/config');
 const BADGE = config.acte1.BADGES_AUTORISES[0];
 const { DEPART, BAISSE_PAR_ACTION, DELAI_INACTIVITE_S, MONTEE_INACTIVITE_PAR_S } = config.jauge;
 const { DELAI_ABSENCE_S } = config.acte2;
+const { DELAI_CONFIRMATION_S, PORTS_ACTIFS } = config.acte3;
+const PORTS_INUTILES = Array.from({ length: config.acte3.NB_PORTS }, (_, i) => i + 1).filter((n) => !PORTS_ACTIFS.includes(n));
 
 const deType = (effets, type) => effets.filter((e) => e.type === type);
 
@@ -132,14 +134,24 @@ test('l\'Acte 2 se résout avec le temps : tick() fait avancer le délai d\'abse
   ]);
   assert.deepEqual(deType(effets, 'enigme'), [
     { type: 'enigme', acte: 2, code: 'acte2_autoplay', etat: 'resolue' },
+    { type: 'enigme', acte: 3, code: 'acte3_brassage', etat: 'active' },
   ]);
   assert.equal(partie.jauge, 50 - BAISSE_PAR_ACTION);
   assert.deepEqual(deType(effets, 'jauge'), [{ type: 'jauge', valeur: 50 - BAISSE_PAR_ACTION, cause: 'action' }]);
-  assert.equal(partie.acteCourant, 3); // l'Acte 3 n'existe pas encore : ses messages seront ignorés
+  assert.equal(partie.acteCourant, 3);
   assert.equal(partie.fragments.length, 2);
 }));
 
-test('Prototype : Acte 1 puis Acte 2 résolus donnent la victoire', () => {
+// Jusqu'à la résolution de l'Acte 2 (le même enchaînement que le simulateur)
+function jouerJusqueActe3(partie) {
+  envoyer(partie, SCENARIO_ACTE1);
+  envoyer(partie, [['datamonstre/acte2/presence', true], ['datamonstre/acte2/presence', false]]);
+  const effets = [];
+  for (let s = 0; s < DELAI_ABSENCE_S; s++) effets.push(...session.tick(partie));
+  return effets;
+}
+
+test("Prototype : avec DERNIER_ACTE = 2, la résolution de l'Acte 2 donne la victoire", avecDernierActe(2, () => {
   const { partie } = session.demarrerPartie();
   envoyer(partie, SCENARIO_ACTE1);
   assert.equal(partie.statut, 'en_cours');
@@ -154,6 +166,60 @@ test('Prototype : Acte 1 puis Acte 2 résolus donnent la victoire', () => {
   assert.deepEqual(partie.fragments.map((f) => f.acte), [1, 2]);
   assert.deepEqual(deType(effets, 'fin'), [{ type: 'fin', statut: 'victoire', raison: 'acte 2 résolu (dernier acte)' }]);
   assert.deepEqual(deType(effets, 'etat_jeu'), [{ type: 'etat_jeu', statut: 'victoire', acte: 2 }]);
+}));
+
+test("l'Acte 2 résolu ouvre l'Acte 3 : LED vertes, énigme active, état du jeu", () => {
+  const { partie } = session.demarrerPartie();
+  const effets = jouerJusqueActe3(partie);
+
+  assert.equal(partie.statut, 'en_cours');
+  assert.equal(partie.acteCourant, 3);
+  assert.deepEqual(deType(effets, 'etat_jeu'), [{ type: 'etat_jeu', statut: 'en_cours', acte: 3 }]);
+  const leds = deType(effets, 'led');
+  assert.equal(leds.length, config.acte3.NB_PORTS);
+  assert.ok(leds.every((e) => e.acte === 3 && e.valeur === 'vert'));
+});
+
+test('Acte 3 : tri des ports puis confirmation donnent la victoire et le fragment 3', () => {
+  const { partie } = session.demarrerPartie();
+  jouerJusqueActe3(partie);
+  partie.jauge = 50;
+
+  const effets = envoyer(partie, PORTS_INUTILES.map((n) => [`datamonstre/acte3/port/${n}`, 'debranche']));
+  // Chaque débranchement : LED rouge puis baisse de la jauge, avec l'acte précisé
+  assert.deepEqual(deType(effets, 'led')[0], { type: 'led', acte: 3, numero: PORTS_INUTILES[0], valeur: 'rouge' });
+  assert.equal(partie.jauge, 50 - PORTS_INUTILES.length * BAISSE_PAR_ACTION);
+  assert.equal(partie.statut, 'en_cours');
+
+  for (let s = 0; s < DELAI_CONFIRMATION_S; s++) effets.push(...session.tick(partie));
+  assert.equal(partie.statut, 'victoire');
+  assert.deepEqual(partie.fragments.map((f) => f.acte), [1, 2, 3]);
+  assert.deepEqual(deType(effets, 'fragment').slice(-1), [
+    { type: 'fragment', acte: 3, valeur: config.acte3.FRAGMENT, ordre: config.acte3.ORDRE_FRAGMENT },
+  ]);
+  assert.deepEqual(deType(effets, 'fin'), [{ type: 'fin', statut: 'victoire', raison: 'acte 3 résolu (dernier acte)' }]);
+});
+
+test("Acte 3 : une erreur fait monter la jauge, est comptée, et ne remet pas l'inactivité à zéro", () => {
+  const { partie } = session.demarrerPartie();
+  jouerJusqueActe3(partie);
+  partie.jauge = 50;
+  partie.secondesSansAction = 7;
+
+  const effets = session.traiterMessage(partie, `datamonstre/acte3/port/${PORTS_ACTIFS[0]}`, 'debranche');
+  assert.equal(partie.jauge, 50 + config.jauge.HAUSSE_PAR_ERREUR);
+  assert.equal(partie.secondesSansAction, 7);
+  assert.deepEqual(deType(effets, 'jauge'), [{ type: 'jauge', valeur: partie.jauge, cause: 'erreur' }]);
+  assert.deepEqual(deType(effets, 'erreur'), [
+    { type: 'erreur', acte: 3, raison: `port ${PORTS_ACTIFS[0]} : liaison encore active débranchée` },
+  ]);
+});
+
+test("à l'Acte 3, les messages des actes précédents sont ignorés", () => {
+  const { partie } = session.demarrerPartie();
+  jouerJusqueActe3(partie);
+  const effets = session.traiterMessage(partie, 'datamonstre/acte2/presence', true);
+  assert.deepEqual(effets.map((e) => e.type), ['ignore']);
 });
 
 test('la jauge pleine donne la défaite à l\'Acte 2, et l\'acte n\'avance plus', avecDernierActe(4, () => {
@@ -192,8 +258,8 @@ test('après la victoire, le temps s\'arrête et les messages sont ignorés', av
   assert.deepEqual(effets.map((e) => e.type), ['ignore']);
 }));
 
-test('la valeur par défaut est DERNIER_ACTE = 2 (jalon Prototype)', () => {
-  assert.equal(config.DERNIER_ACTE, 2);
+test("la valeur par défaut est DERNIER_ACTE = 3 (Actes 1 à 3, en attendant l'Acte 4)", () => {
+  assert.equal(config.DERNIER_ACTE, 3);
 });
 
 test('un message d\'un acte qui n\'est pas en cours est ignoré', () => {

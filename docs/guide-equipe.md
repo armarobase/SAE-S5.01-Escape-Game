@@ -9,13 +9,14 @@ Ce qu'il faut savoir pour travailler sur le dépôt. L'installation complète es
 | Broker Mosquitto | Authentification obligatoire, sous Docker |
 | Contrat MQTT | `docs/mqtt.md` (topics, formats, QoS, retained) |
 | Base PostgreSQL | Tables des parties, énigmes, capteurs, journal, fragments, scores (`database/migrations/`) |
-| Backend | Validation des messages, Actes 1 et 2 jouables, jauge, timer de 40 min, victoire et défaite, score, ordres aux LED, API REST |
+| Backend | Validation des messages, Actes 1, 2 et 3 jouables, jauge, timer de 40 min, victoire et défaite, score, ordres aux LED, API REST |
 | Écran de jeu | Diffusion par WebSocket selon `frontend/websocket.md` ; faux écran en console : `npm run ecran` dans `backend/` |
-| Simulateur | `simulator/` : scénarios Acte 1, Acte 2 et messages invalides |
+| Simulateur | `simulator/` : scénarios Acte 1, Acte 2, Acte 3 et messages invalides |
 | Poste de l'Acte 1 | Programme sur la branche `feature/iot-acte1`, à tester avec le backend |
-| Actes 3 et 4 | À faire |
+| Poste de l'Acte 3 | Programme écrit (`iot/acte3/acte3.ino`), jamais testé sur la carte |
+| Acte 4 | À faire |
 
-Fin de partie actuelle : la résolution de l'Acte 2 donne la victoire (`DERNIER_ACTE` dans `backend/src/game/config.js`, passera à 4).
+Fin de partie actuelle : la résolution de l'Acte 3 donne la victoire (`DERNIER_ACTE` dans `backend/src/game/config.js`, passera à 4).
 
 ## Où se trouvent les choses
 
