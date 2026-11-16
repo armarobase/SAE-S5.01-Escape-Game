@@ -197,3 +197,40 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 
 ### Temps passé
 - 8h
+
+---
+
+## Semaine du 09/11/2026 au 15/11/2026
+
+### Bilan des objectifs de la semaine précédente
+- Montrer la maquette à Adam : reporté, l'écran n'est pas demandé pour le jalon Prototype
+- Définir avec Yassine et Ali les consignes et indices des joueurs : reporté, à traiter avec la réunion de game design des actes 3 et 4
+- Tester l'Acte 1 avec le vrai poste de Bassirou : en cours (poste fusionné, guide de test écrit, séance de test à faire)
+- Répéter la démo du Prototype : en partie (boucle complète rejouée au simulateur)
+- Voir avec Ali le statut "abandonnee" et la durée par défaut : demande préparée pour Ali (migration 003)
+
+### Réalisé cette semaine
+- Relecture et fusion des pull requests de Bassirou : programme du poste de l'Acte 1 câblé sur le vrai matériel (PR #8) et ajout du vrai badge aux badges autorisés (PR #18)
+- Analyse du programme de l'Acte 1 : tous les éléments du poste sont gérés (badge, 3 boutons, 3 LED, slider, capteur de lumière, statut du poste) ; seul le bargraph, optionnel, n'est pas codé. Proposition de découpage du programme en plusieurs fichiers, transmise à Bassirou
+- Guide de test du matériel avec le backend (docs/test-materiel.md, PR #19) : préparation du PC (pare-feu, adresse IP), configuration de la carte, test de chaque capteur, boucle de jeu complète du jalon Prototype, dépannage et liste de résultats
+- Préparation du poste de l'Acte 2 pour Bassirou : récapitulatif du contrat MQTT (topic de présence, statut, Last Will) et des pièges du capteur de présence (temps de chauffe, temps de maintien)
+- Déploiement avec Docker : image du backend (Dockerfile) et docker-compose.yml complet, avec redémarrage automatique des services et attente de la base de données avant le démarrage du backend (PR #20). Testé : les trois services démarrent avec une seule commande et une partie complète se joue au simulateur. Prépare l'installation sur le Raspberry Pi pour la JPO
+- Backend : suppression du message de configuration affiché au démarrage (PR #21)
+- Résumé du projet (contraintes, objectifs, idée, avancement, répartition des rôles) pour le point d'avancement
+- Préparation du backlog de la Beta : principe des issues, labels, jalons et tableau de suivi sur GitHub
+
+### Difficultés rencontrées
+- Le jalon Prototype approche et le poste de l'Acte 1 n'a pas encore été testé en entier avec le backend : séance de test à planifier avec Bassirou
+- Le poste de l'Acte 2 n'a pas encore de programme : l'Acte 2 se joue au simulateur en attendant
+- Les actes 3 et 4 attendent des décisions de game design (ports utiles, erreurs, longueur du code, messages du LCD) avant de pouvoir être codés dans le backend
+
+### Objectifs pour la semaine prochaine
+- Faire la séance de test de l'Acte 1 sur le matériel avec Bassirou et régler les seuils
+- Présenter la boucle de jeu au jalon Prototype
+- Essayer le déploiement Docker sur le vrai Raspberry Pi 3B+
+- Mettre à jour la documentation d'installation (lancement avec Docker, déploiement sur le Raspberry Pi)
+- Préparer la réunion de game design des actes 3 et 4 et créer le backlog de la Beta sur GitHub
+- Adapter le backend au statut "abandonnee" quand la migration d'Ali sera fusionnée
+
+### Temps passé
+- 7h
