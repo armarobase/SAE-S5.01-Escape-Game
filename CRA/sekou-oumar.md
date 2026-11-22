@@ -234,3 +234,28 @@ Rôles : backend/API, sécurité, IoT, documentation, agile
 
 ### Temps passé
 - 7h
+
+
+## Semaine du 16/11/2026 au 22/11/2026
+
+
+### Réalisé cette semaine
+- Mise en place complète du projet sur mon ordinateur portable : broker Mosquitto et base PostgreSQL sous Docker, serveur, écran de jeu, configuration réseau pour les postes
+- Test d'une partie complète de l'Acte 1 sur le vrai matériel, de bout en bout :
+  - badge RFID reconnu, ouverture de la console
+  - boutons des notifications et LED pilotées par le serveur
+  - slider de luminosité et capteur de lumière
+  - jauge, fin de l'acte et enregistrement de la partie en base
+- Résultat : tout le matériel et toute la chaîne fonctionnent (poste Arduino → MQTT → serveur → base de données et écran)
+
+### Difficultés rencontrées
+- [Aucune difficulté bloquante]
+
+### Objectifs pour la semaine prochaine
+- Parties de test avec des personnes extérieures à l'équipe, pour régler les seuils et la vitesse de la jauge
+- Procédure de remise à zéro du matériel entre deux parties
+- Poste de l'Acte 2 (capteur de présence) avec Bassirou
+- [Préparation des actes 3 et 4 pour la Beta de mi-janvier]
+
+### Temps passé
+- Total : 3h
