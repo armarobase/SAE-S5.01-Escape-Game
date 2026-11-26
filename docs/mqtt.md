@@ -1,7 +1,7 @@
 # Contrat MQTT
 
-**Statut** : proposition v0.1, à valider par l'équipe
-**Rédaction** : Sékou-Oumar Diallo
+**Statut** : version 1.2 en relecture (compléments de l'Acte 4). Les versions 1.0 et 1.1 sont validées par l'équipe.
+**Rédaction** : Sékou-Oumar Diallo ; Acte 3 : Ali Ben Akremi
 
 Ce document définit tous les messages échangés entre les postes physiques (ou le simulateur) et le backend. Il fait référence : toute modification doit être répercutée dans le code des cartes (`iot/`), le simulateur (`simulator/`) et le backend (`backend/`), puis notée dans l'historique en bas de page.
 
@@ -55,7 +55,9 @@ Précisions :
 - **Bouton** : la carte signale l'appui, c'est le backend qui bascule l'état (coupé ou actif) et renvoie l'ordre à la LED.
 - **Présence (PIR)** : la carte envoie l'état brut du capteur. Le délai avant de considérer la salle vide est appliqué par le backend (réglable, `DELAI_ABSENCE_S` dans `backend/src/game/config.js`). Le backend ne compte l'absence qu'après avoir reçu au moins un `true` pendant l'Acte 2 : la carte doit donc bien publier `true` quand quelqu'un est détecté, et ne rien envoyer tant que l'état ne change pas.
 - **Ports de l'Acte 3** : au démarrage, la carte publie l'état de tous ses ports. Le backend ne peut les lire qu'une fois l'Acte 3 commencé (les messages des autres actes sont ignorés) : il suppose donc tous les câbles **branchés** au début de l'acte, et la carte ne republie pas un port qui n'a pas changé. Un message qui ne change pas l'état d'un port (redélivrance, état initial) est sans effet. Ports à garder ou à débrancher : `PORTS_ACTIFS` dans `backend/src/game/config.js`.
-- **Code de l'Acte 4** : la saisie chiffre par chiffre (joystick) est gérée localement par la carte, qui l'affiche sur le LCD. Seul le code complet est envoyé ; la vérification se fait uniquement côté backend.
+- **Poste de l'Acte 3** : Arduino Mega + Ethernet Shield, relié en filaire. Il suit les mêmes règles de connexion que les autres postes (identifiant `poste-acte3`, statut et Last Will, section 5).
+- **Code de l'Acte 4** : le joueur choisit les chiffres un par un avec le joystick, et la carte affiche sa saisie sur le LCD. Quand il valide, la carte envoie **le code complet en une seule fois** (texte de chiffres, par exemple `"4271"`), puis efface sa saisie pour un nouvel essai. Elle ne vérifie rien : c'est le backend qui décide si le code est bon et qui répond sur le LCD (section 4). La manière de choisir et de valider les chiffres au joystick est propre au programme de la carte ; le contrat ne fixe que le message envoyé. Le contrat resterait identique avec un clavier 4x4, puisque seule la saisie sur la carte changerait.
+- **Brouillage de l'Acte 4** : le nombre de fragments brouillés par le monstre (selon la jauge à l'arrivée dans l'acte) ne passe pas par MQTT. Il concerne les documents affichés à l'écran (contrat WebSocket, `frontend/websocket.md`) ; le LCD peut seulement l'annoncer.
 
 ## 4. Messages du backend vers les postes (actionneurs)
 
@@ -73,11 +75,17 @@ Précisions :
 { "valeur": { "statut": "en_cours", "acte": 2 } }
 ```
 
-LED des ports (Acte 3) : `"vert"` tant que le câble est branché, `"rouge"` dès qu'il est débranché, `"eteint"` hors jeu. La couleur ne dit pas si le choix est bon : débrancher un port encore actif donne aussi une LED rouge, et fait monter la jauge.
+LED des ports (Acte 3) : `"vert"` tant que le câble est branché, `"rouge"` dès qu'il est débranché, `"eteint"` hors jeu. La couleur ne dit pas si le choix est bon : débrancher un port encore actif donne aussi une LED rouge, et fait monter la jauge. Chaque port a deux LED physiques (une verte, une rouge) mais un seul topic : c'est la carte qui allume la bonne LED selon la valeur reçue (`"eteint"` éteint les deux).
 
 Valeurs possibles de `statut` : `"attente"`, `"en_cours"`, `"victoire"`, `"defaite"`.
 
 Le LCD de l'Acte 4 sert aux messages du jeu (consignes, code refusé, brouillage). Pendant la saisie, c'est la carte qui affiche les chiffres choisis.
+
+LCD de l'Acte 4, précisions :
+
+- **Texte sans accents**, en ASCII simple : l'afficheur LCD Grove n'affiche pas les caractères accentués (é, è, à, ç...). Le backend écrit donc `"Code refuse"` et non `"Code refusé"`. Au plus 16 caractères par ligne : le backend coupe ou abrège ses messages, la carte n'a rien à tronquer.
+- **Quand le backend écrit** : au début de l'Acte 4 (consigne) et en réponse à **chaque** code reçu (accepté ou refusé), pour que les joueurs aient toujours un retour. Message retained : une carte qui redémarre réaffiche tout de suite le dernier message.
+- **Partage de l'écran avec la saisie** : la carte affiche le dernier message reçu du backend, puis reprend l'affichage de la saisie dès que le joueur touche au joystick.
 
 ## 5. Statut des postes
 
@@ -90,6 +98,7 @@ Chaque carte signale si elle est connectée :
 - À la connexion, la carte publie `"online"`.
 - Elle déclare un **Last Will** (testament) avec la valeur `"offline"` : si elle se déconnecte brutalement (panne, coupure WiFi), le broker publie ce message à sa place.
 - Le backend sait ainsi quel poste est hors ligne et peut basculer sur le simulateur pour cet acte (mode de secours de la JPO).
+- Ces règles valent pour tous les postes, quelle que soit leur connexion : WiFi pour les actes 1, 2 et 4 (MKR WiFi 1010), Ethernet pour l'Acte 3 (Mega + Ethernet Shield). Le Last Will est publié par le broker dès qu'il perd la connexion avec la carte, câble réseau débranché compris.
 
 ## 6. Règles techniques
 
@@ -131,16 +140,34 @@ Pour rejouer un scénario complet : `simulator/`.
 
 ## 9. Points à valider avec l'équipe
 
+### Valeurs déjà implémentées, à confirmer
+
+Elles fonctionnent dans le code actuel. Les changer ne demande que de modifier le fichier indiqué (et parfois la carte).
+
+| Point | Valeur actuelle | Fichier | Avec qui |
+|---|---|---|---|
+| Nombre de boutons (Acte 1) | 3 | `backend/src/game/config.js` (`acte1.NB_BOUTONS`), `iot/acte1/acte1.ino` | Yassine, Ali (game design) |
+| Seuil d'envoi slider / lumière | variation de 5 | `iot/acte1/acte1.ino` (`SEUIL_VARIATION`) | Bassirou (IoT) |
+| Format de l'identifiant RFID | texte de 10 caractères (ex. `1D00CC4C6E`) | `iot/acte1/acte1.ino`, `backend/src/game/config.js` (`BADGES_AUTORISES`) | Bassirou (IoT) |
+| Nombre de ports (Acte 3) | 4 | `backend/src/game/config.js` (`acte3.NB_PORTS`), `database/migrations/002_capteurs.sql` | Yassine, Ali (game design) |
+| Ports utiles (Acte 3) | port 1 seulement (les autres sont à débrancher) ; doit correspondre au plan de câblage du décor | `backend/src/game/config.js` (`acte3.PORTS_ACTIFS`) | Yassine, Ali (game design) |
+| Délai de confirmation (Acte 3) | 2 s de configuration stable avant de résoudre | `backend/src/game/config.js` (`acte3.DELAI_CONFIRMATION_S`) | Yassine, Ali (game design) |
+| Fragments du code | `"4"` (Acte 1), `"27"` (Acte 2), `"1"` (Acte 3), dans cet ordre : code `4271` | `backend/src/game/config.js` (`FRAGMENT`, `ORDRE_FRAGMENT`) | Yassine, Ali (game design) |
+| Règle du brouillage (Acte 4) | fragments brouillés selon la jauge à l'arrivée : 0 sous 25, 1 de 25 à 49, 2 de 50 à 74, 3 à partir de 75 | `backend/src/game/jauge.js` (`nbFragmentsBrouilles`) | Yassine, Ali (game design) |
+
+### Décisions encore ouvertes
+
 | Point | Valeur proposée | Avec qui |
 |---|---|---|
-| Nombre de boutons (Acte 1) | 3 | Yassine, Ali (game design) |
-| Nombre de ports (Acte 3) | 4 | Yassine, Ali (game design) |
-| Longueur du code final | 4 chiffres | Yassine, Ali (game design) |
-| Seuil d'envoi slider / lumière | variation de 5 | Bassirou (IoT) |
-| Format de l'identifiant RFID | texte | Bassirou (selon le module Grove) |
+| Longueur du code final | 4 chiffres (la longueur des trois fragments réunis). À fixer aussi dans la carte, qui doit savoir combien de chiffres saisir | Yassine, Ali (game design), Bassirou (IoT) |
+| Nombre d'essais et pénalité en cas de code faux | essais illimités ; chaque code faux compte comme une erreur (jauge +3, `HAUSSE_PAR_ERREUR`) et affiche `"Code refuse"` sur le LCD | Yassine, Ali (game design) |
+| Moment du document `acte4_alerte` | dès le début de l'Acte 4 | Yassine, Ali (game design), Adam (écran) |
 
 ## Historique
 
 | Version | Date | Modification |
 |---|---|---|
 | 0.1 | 17/10/2026 | Première proposition |
+| 1.0 | 25/10/2026 | Version validée par l'équipe (actes 1 et 2) |
+| 1.1 | 15/11/2026 | Compléments de l'Acte 3 par Ali : état de départ des ports, LED des ports, `PORTS_ACTIFS` |
+| 1.2 | 26/11/2026 | Compléments de l'Acte 4 : saisie du code au joystick, messages du LCD (sans accents, réponse à chaque code), postes en Ethernet, points à valider séparés entre valeurs implémentées et décisions ouvertes. En relecture |
